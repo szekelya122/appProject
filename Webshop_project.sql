@@ -45,14 +45,7 @@ CREATE TABLE orders (
     `order_quantity` INTEGER NOT NULL,
     `order_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50),
-    CONSTRAINT fk_user FOREIGN KEY (user_id)
-        REFERENCES users (user_id)
-        ON DELETE CASCADE -- If the user is deleted, delete their orders
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_product FOREIGN KEY (product_id)
-        REFERENCES product (product_id)
-        ON DELETE CASCADE -- If the product is deleted, delete the associated orders
-        ON UPDATE CASCADE
+    
 ); ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -68,10 +61,7 @@ CREATE TABLE product (
     `price` DECIMAL(10, 2) NOT NULL,
     `product_quantity` INTEGER NOT NULL,
     category_id INTEGER, -- Foreign key to categories
-    CONSTRAINT fk_category FOREIGN KEY (category_id)
-        REFERENCES categories (id)
-        ON DELETE SET NULL -- If the category is deleted, set category_id to NULL
-        ON UPDATE CASCADE  -- If the category's id changes, update it in this table too
+  
 ); ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
