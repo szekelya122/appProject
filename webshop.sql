@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 25, 2024 at 09:41 AM
+-- Generation Time: Nov 25, 2024 at 09:51 AM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -38,15 +38,14 @@ CREATE TABLE `categories` (
 -- Table structure for table `orders`
 --
 
-CREATE TABLE orders (
-    `id` SERIAL PRIMARY KEY, -- Primary key
-    `user_id` INTEGER NOT NULL, -- Foreign key to users
-    `product_id` INTEGER NOT NULL, -- Foreign key to product
-    `order_quantity` INTEGER NOT NULL,
-    `order_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(50),
-    
-); ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `orders` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `order_quantity` int(11) NOT NULL,
+  `order_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -54,15 +53,14 @@ CREATE TABLE orders (
 -- Table structure for table `product`
 --
 
-CREATE TABLE product (
-    `product_id` SERIAL PRIMARY KEY, -- Primary key
-    `product_name` VARCHAR(100) NOT NULL,
-    `product_type` VARCHAR(50),
-    `price` DECIMAL(10, 2) NOT NULL,
-    `product_quantity` INTEGER NOT NULL,
-    category_id INTEGER, -- Foreign key to categories
-  
-); ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `product` (
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `product_name` varchar(100) NOT NULL,
+  `product_type` varchar(50) DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `product_quantity` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
