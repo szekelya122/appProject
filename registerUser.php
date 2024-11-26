@@ -3,7 +3,7 @@
 $host = 'localhost';
 $dbname = 'webshop';
 $username = 'root';
-$password = '';
+$password = 'root';
 
 // Create a connection to the database
 try {
@@ -16,15 +16,29 @@ try {
 // Check if form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Collect and sanitize user inputs
-    $username = htmlspecialchars(trim($_POST['username']));
+    $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
 
     // Validate inputs
-    if (empty($username) || empty($password) || empty($email)) {
-        echo "Username, password, and email are required!";
+    $errors = [];
+    if (empty($username)) {
+        $errors[] = "Username is required.";
+    }
+    if (empty($password)) {
+        $errors[] = "Password is required.";
+    }
+    if (empty($email)) {
+        $errors[] = "Email is required.";
     } elseif (!$email) {
-        echo "Invalid email address!";
+        $errors[] = "Invalid email address.";
+    }
+
+    if ($errors) {
+        // Display errors
+        foreach ($errors as $error) {
+            echo "<p style='color: red;'>$error</p>";
+        }
     } else {
         try {
             // Hash the password for secure storage
@@ -34,13 +48,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO users (username, password, email) VALUES (:username, :password, :email)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                ':username' => $username,
+                ':username' => htmlspecialchars($username),
                 ':password' => $hashedPassword,
                 ':email' => $email,
             ]);
-            echo "User registered successfully!";
+
+            echo "<p style='color: green;'>User registered successfully!</p>";
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            // Handle unique constraint violations for email or username
+            if ($e->getCode() == 23000) {
+                echo "<p style='color: red;'>A user with this email or username already exists.</p>";
+            } else {
+                echo "<p style='color: red;'>Error: " . $e->getMessage() . "</p>";
+            }
         }
     }
 }
