@@ -3,28 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title a href="java.js">Shop - Login</title>
+    <title>Shop - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="logIn.css">
-    <script      ></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
-<body>
-    <div class="login-container">
-        <h2>Login</h2>
-        <form>
-            <input type="text" class="input-field" placeholder="Username" required>
-            <input type="password" class="input-field" placeholder="Password" required>
-            <button type="submit" class="login-button">Login</button>
-            <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-        </form>
-        <div  class="forgot-password">  <i>Forgot yourpassword?</i></div>
-        <div class="register-redirect">
-            Don't have an account yet? <a href="register.html">Register here</a>
+<body style="background-color: #121212; color: #fff;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="login-container p-4 bg-dark border rounded border-gold">
+                    <h2 class="text-center text-gold mb-4">Login</h2>
+                    <form>
+                        <div class="mb-3">
+                            <input type="text" class="form-control bg-black text-white border-gold" placeholder="Username" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control bg-black text-white border-gold" placeholder="Password" required>
+                        </div>
+                        <div class="mb-3">
+                            <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+                        </div>
+                        <button type="submit" class="btn btn-gold w-100">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="#" class="text-gold text-decoration-none"><i>Forgot your password?</i></a>
+                    </div>
+                    <div class="text-center mt-3">
+                        <span>Don't have an account yet? </span>
+                        <a href="register.html" class="text-gold text-decoration-none">Register here</a>
+                    </div>
+                </div>
+            </div>
         </div>
-
-
-        
     </div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

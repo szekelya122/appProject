@@ -3,23 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>User Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="register.css">
 </head>
-<body>
-    <h1>Register</h1>
-    <form method="POST" action="registerUser.php">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
-        
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
-        
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br><br>
-        
-        <button type="submit">Register</button>
-    </form>
+<body style="background-color: #121212; color: #fff;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <h1 class="text-center text-gold mb-4">Register</h1>
+                <form method="POST" action="registerUser.php" class="p-4 border rounded bg-dark border-gold">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-gold">Username:</label>
+                        <input type="text" id="username" name="username" class="form-control bg-black text-white border-gold" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label text-gold">Password:</label>
+                        <input type="password" id="password" name="password" class="form-control bg-black text-white border-gold" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-gold">Email:</label>
+                        <input type="email" id="email" name="email" class="form-control bg-black text-white border-gold" required>
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100">Register</button>
+                </form>
+                <p>Already have an account? <a href="logIn.html">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -10,7 +10,7 @@ body {
     background-color: #b8860b;
     color: #fff;
     border: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.3s ease;
 }
 
 .btn-gold:hover {
@@ -18,14 +18,17 @@ body {
     color: #000;
 }
 
-.bg-dark {
-    background-color: #1c1c1c;
+.btn-outline-gold {
+    color: #b8860b;
+    border-color: #b8860b;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+    background-color: #b8860b;
+    color: #fff;
 }
 
 .border-gold {
     border-color: #b8860b;
-}
-
-.bg-black {
-    background-color: #121212;
 }
