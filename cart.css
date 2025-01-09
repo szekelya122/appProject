@@ -1,0 +1,32 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: #fff;
+}
+
+.navbar .nav-link.active {
+    color: #ffc107 !important;
+}
+
+.card {
+    margin-bottom: 15px;
+    background-color: #1c1c1c;
+}
+
+.card .btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+.card .btn-danger:hover {
+    background-color: #ff6666;
+}
+
+.card .btn-warning {
+    background-color: #ffc107;
+    border: none;
+}
+
+.card .btn-warning:hover {
+    background-color: #ffcc33;
+}
