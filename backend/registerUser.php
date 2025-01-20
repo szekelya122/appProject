@@ -1,21 +1,19 @@
 <?php
- include("config.php");
+session_start();
+ // Database configuration
+ $host = 'localhost';
+ $username = 'root';
+ $password = 'root';
+ $dbname = 'webshop';
 
-
-
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
-
+ 
+ 
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
-
     
     $errors = [];
     if (empty($username)) {
@@ -35,21 +33,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach ($errors as $error) {
             echo "<p style='color: red;'>$error</p>";
         }
+        
     } else {
         try {
+            
             // Hash the password for secure storage
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
+                
             // Insert user into the database
             $sql = "INSERT INTO users (username, password, email) VALUES (:username, :password, :email)";
             $stmt = $pdo->prepare($sql);
+            
             $stmt->execute([
                 ':username' => htmlspecialchars($username),
                 ':password' => $hashedPassword,
                 ':email' => $email,
+                
             ]);
+            
+           
 
             echo "<p style='color: green;'>User registered successfully!</p>";
+            header("Location: http://localhost/appProject/login.html");
         } catch (PDOException $e) {
             // Handle unique constraint violations for email or username
             if ($e->getCode() == 23000) {
@@ -60,4 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+else{
+    echo("buziárminbuta");
+}
+
 ?>  
