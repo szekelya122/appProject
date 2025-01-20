@@ -1,80 +1,44 @@
-
 <?php
-   include("config.php");
-   session_start();
-   $error='';
-   if($_SERVER["REQUEST_METHOD"] == "POST") {
-   
-      // username and password sent from form 
-      $myusername = mysqli_real_escape_string($db,$_POST['username']);
-      $mypassword = mysqli_real_escape_string($db,$_POST['password']); 
+session_start();
+
+// Database connection
+$host = 'localhost';
+$username = 'root';
+$password = 'root';
+$dbname = 'webshop';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+    die("Database connection failed: " . $e->getMessage());
 }
 
-      $sql = "SELECT * FROM user WHERE username = '$myusername' and passcode = '$mypassword'";
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
-    $username = trim($_POST['username']);
-    $password = trim($_POST['password']);
-    
+// Handle login form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $user = trim($_POST['username']);
+    $pass = trim($_POST['password']);
 
-      $result = mysqli_query($db,$sql);      
-      $row = mysqli_num_rows($result);      
-      $count = mysqli_num_rows($result);    
-    
-    $errors = [];
-    if (empty($username)) {
-        $errors[] = "Username is required.";
-    }
-    if (empty($password)) {
-        $errors[] = "Password is required.";
-    }
-    
-    
+    if (!empty($user) && !empty($pass)) {
+        // Prepare and execute query
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = :username");
+        $stmt->bindParam(':username', $user);
+        $stmt->execute();
 
-      if($count == 1) {
-	  
-         // session_register("myusername");
-         $_SESSION['login_user'] = $myusername;
-         header("location: welcome.php");
-      } else {
-         $error = "Your Login Name or Password is invalid";
-      }
-   }
+        $userRecord = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($errors) {
-        
-        foreach ($errors as $error) {
-            echo "<p style='color: red;'>$error</p>";
+        // Verify password
+        if ($userRecord && password_verify($pass, $userRecord['password'])) {
+            // Store session variables
+            $_SESSION['user_id'] = $userRecord['id'];
+            $_SESSION['username'] = $userRecord['username'];
+            header("Location: dashboard.php");
+            exit;
+        } else {
+            $error = "Invalid username or password.";
         }
     } else {
-        try {
-            // Hash the password for secure storage
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-            // Insert user into the database
-            $sql = "INSERT INTO users (username, password, email) VALUES (:username, :password, :email)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':username' => htmlspecialchars($username),
-                ':password' => $hashedPassword,
-                ':email' => $email,
-            ]);
-
-            echo "<p style='color: green;'>User registered successfully!</p>";
-        } catch (PDOException $e) {
-            // Handle unique constraint violations for email or username
-            if ($e->getCode() == 23000) {
-                echo "<p style='color: red;'>A user with this email or username already exists.</p>";
-            } else {
-                echo "<p style='color: red;'>Error: " . $e->getMessage() . "</p>";
-            }
-        }
+        $error = "Please fill in all fields.";
     }
 }
-?>  
+?>
