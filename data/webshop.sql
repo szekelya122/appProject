@@ -2,10 +2,10 @@
 -- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Jan 16, 2025 at 08:53 AM
--- Server version: 5.7.24
--- PHP Version: 8.3.1
+-- Gép: localhost:3306
+-- Létrehozás ideje: 2025. Jan 20. 08:47
+-- Kiszolgáló verziója: 5.7.24
+-- PHP verzió: 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,17 +18,41 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `webshop`
+-- Adatbázis: `webshop`
 --
 
 DELIMITER $$
 --
--- Procedures
+-- Eljárások
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteOrder` (IN `p_order_id` INT)   BEGIN
       DELETE FROM orders
       WHERE id = p_order_id;
   END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAllCategories` ()   BEGIN
+    SELECT 
+        id AS category_id, 
+        category_name 
+    FROM 
+        categories;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAllProducts` ()   BEGIN
+    SELECT 
+        p.product_id, 
+        p.product_name, 
+        p.product_type, 
+        p.price, 
+        p.product_quantity, 
+        c.category_name
+    FROM 
+        product p
+    LEFT JOIN 
+        categories c 
+    ON 
+        p.category_id = c.id;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOrdersByUser` (IN `p_user_id` INT)   BEGIN
       SELECT 
@@ -43,6 +67,24 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOrdersByUser` (IN `p_user_id` IN
       JOIN product p ON o.product_id = p.product_id
       WHERE o.user_id = p_user_id;
   END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductDetails` (IN `p_product_id` INT)   BEGIN
+    SELECT 
+        p.product_id, 
+        p.product_name, 
+        p.product_type, 
+        p.price, 
+        p.product_quantity, 
+        c.category_name 
+    FROM 
+        product p
+    LEFT JOIN 
+        categories c 
+    ON 
+        p.category_id = c.id
+    WHERE 
+        p.product_id = p_product_id;
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductsByCategory` (IN `p_category_id` INT)   BEGIN
       SELECT product_id, product_name, price, product_quantity
@@ -89,7 +131,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Tábla szerkezet ehhez a táblához `categories`
 --
 
 CREATE TABLE `categories` (
@@ -98,7 +140,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `categories`
+-- A tábla adatainak kiíratása `categories`
 --
 
 INSERT INTO `categories` (`id`, `category_name`) VALUES
@@ -116,7 +158,7 @@ INSERT INTO `categories` (`id`, `category_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
+-- Tábla szerkezet ehhez a táblához `orders`
 --
 
 CREATE TABLE `orders` (
@@ -129,7 +171,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `orders`
+-- A tábla adatainak kiíratása `orders`
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `product_id`, `order_quantity`, `order_date`, `status`) VALUES
@@ -147,7 +189,7 @@ INSERT INTO `orders` (`id`, `user_id`, `product_id`, `order_quantity`, `order_da
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product`
+-- Tábla szerkezet ehhez a táblához `product`
 --
 
 CREATE TABLE `product` (
@@ -160,7 +202,7 @@ CREATE TABLE `product` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `product`
+-- A tábla adatainak kiíratása `product`
 --
 
 INSERT INTO `product` (`product_id`, `product_name`, `product_type`, `price`, `product_quantity`, `category_id`) VALUES
@@ -178,7 +220,7 @@ INSERT INTO `product` (`product_id`, `product_name`, `product_type`, `price`, `p
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Tábla szerkezet ehhez a táblához `users`
 --
 
 CREATE TABLE `users` (
@@ -193,7 +235,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users`
+-- A tábla adatainak kiíratása `users`
 --
 
 INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `phonenumber`, `email`, `password`) VALUES
@@ -201,7 +243,7 @@ INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `ph
 (3, 'Hologram Ákos', 'Customer', '2024-11-25 10:17:50', 'Lehel sor 3', '06202369220', 'Hmi@gmail.com', ''),
 (4, 'Kökényesi MC István', 'customer', '2025-01-09 09:05:45', NULL, NULL, 'kalanyoskornel1976@gmail.com', '$2y$10$mssAPBR5r9cRS2MmhAwu9.8qtGsWJ2xNiaLz3f/CRQ9ctNOp/WXRe'),
 (5, 'Armin', 'customer', '2025-01-09 09:20:21', NULL, NULL, 'szekelyarmin121@gmail.com', '$2y$10$TJU2rst3ObMiqCU8m.EC/OrSg7FajMV0DokznKsTrTD4FE428T1Eq'),
-(6, 'KukKornél', 'customer', '2025-01-09 09:45:15', NULL, NULL, 'Kurvakornel12@gmail.com', '$2y$10$iegRV2q7owQ4IH3il5rFleBcb4J6vaKuFK.fShKdMzLgi1uzLL5Wa'),
+(6, 'KukKornél', 'customer', '2025-01-09 09:45:15', NULL, NULL, 'dagadtkornel12@gmail.com', '$2y$10$iegRV2q7owQ4IH3il5rFleBcb4J6vaKuFK.fShKdMzLgi1uzLL5Wa'),
 (7, 'Jane Doe', 'customer', '2025-01-16 08:47:54', '123 Main St', '1234567890', 'jane.doe@example.com', '$2y$10$EXAMPLEPASSWORDHASH1'),
 (8, 'John Smith', 'customer', '2025-01-16 08:47:54', '456 Elm St', '2345678901', 'john.smith@example.com', '$2y$10$EXAMPLEPASSWORDHASH2'),
 (9, 'Alice Brown', 'customer', '2025-01-16 08:47:54', '789 Oak St', '3456789012', 'alice.brown@example.com', '$2y$10$EXAMPLEPASSWORDHASH3'),
@@ -214,61 +256,61 @@ INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `ph
 (16, 'Ivy Gold', 'customer', '2025-01-16 08:47:54', '147 Spruce St', '0123456789', 'ivy.gold@example.com', '$2y$10$EXAMPLEPASSWORDHASH10');
 
 --
--- Indexes for dumped tables
+-- Indexek a kiírt táblákhoz
 --
 
 --
--- Indexes for table `categories`
+-- A tábla indexei `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`);
 
 --
--- Indexes for table `orders`
+-- A tábla indexei `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`);
 
 --
--- Indexes for table `product`
+-- A tábla indexei `product`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`product_id`),
   ADD UNIQUE KEY `product_id` (`product_id`);
 
 --
--- Indexes for table `users`
+-- A tábla indexei `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `user_id` (`user_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- A kiírt táblák AUTO_INCREMENT értéke
 --
 
 --
--- AUTO_INCREMENT for table `categories`
+-- AUTO_INCREMENT a táblához `categories`
 --
 ALTER TABLE `categories`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `orders`
+-- AUTO_INCREMENT a táblához `orders`
 --
 ALTER TABLE `orders`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `product`
+-- AUTO_INCREMENT a táblához `product`
 --
 ALTER TABLE `product`
   MODIFY `product_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT a táblához `users`
 --
 ALTER TABLE `users`
   MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
