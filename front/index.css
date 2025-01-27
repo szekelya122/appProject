@@ -181,3 +181,65 @@ a:hover {
     transform: scale(1.05);
     box-shadow: 0 10px 20px rgba(255, 215, 0, 0.5); /* Arany színű árnyék */
 }
+
+
+
+.text-gold {
+    color: #b8860b;
+}
+
+.btn-gold {
+    background-color: #b8860b;
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-gold:hover {
+    background-color: #ffcc00;
+    color: #000;
+}
+
+.btn-outline-gold {
+    color: #b8860b;
+    border-color: #b8860b;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+    background-color: #b8860b;
+    color: #fff;
+}
+
+.border-gold {
+    border-color: #b8860b;
+}
+
+/* Main background animation */
+.main {
+    position: relative;
+    height: 100vh; /* A main teljes magasságú legyen */
+    overflow: hidden;
+}
+
+.main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    animation: backgroundFade 15s infinite;
+    z-index: -1; /* Hogy a tartalom fölött legyen */
+}
+
+/* Animáció kulcsfontosságú képkockái */
+@keyframes backgroundFade {
+    0% { background-image: url('linjer-classic-watch-34-rose-gold-tan-1-front_1000x.webp'); }
+    33% { background-image: url('linjer-classic-watch-34-rose-gold-tan-1-front_1000x.webp'); }
+    66% { background-image: url('linjer-classic-watch-34-rose-gold-tan-1-front_1000x.webp'); }
+    100% { background-image: url('linjer-classic-watch-34-rose-gold-tan-1-front_1000x.webp'); }
+    
+}
