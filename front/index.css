@@ -218,7 +218,7 @@ a:hover {
 /* Main background animation */
 .main {
     position: relative;
-    height: 100vh; /* A main teljes magasságú legyen */
+    height: 50vh; /* A main teljes magasságú legyen */
     overflow: hidden;
 }
 
@@ -228,7 +228,7 @@ a:hover {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 50%;
     background-size: cover;
     background-position: center;
     animation: backgroundFade 15s infinite;
@@ -243,3 +243,4 @@ a:hover {
     100% { background-image: url('linjer-classic-watch-34-rose-gold-tan-1-front_1000x.webp'); }
     
 }
+
