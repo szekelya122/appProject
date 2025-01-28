@@ -1,8 +1,8 @@
--- phpMyAdmin SQL Dump
--- version 5.1.2
+@ -3,320 +3,320 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: localhost:3306
+-- Létrehozás ideje: 2025. Jan 20. 08:47
 -- Létrehozás ideje: 2025. Jan 20. 09:19
 -- Kiszolgáló verziója: 5.7.24
 -- PHP verzió: 8.3.1

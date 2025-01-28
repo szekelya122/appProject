@@ -4,42 +4,39 @@ session_start();
 // MySQL kapcsolódás
 $servername = "localhost";
 $username = "root";  // Az adatbázis felhasználó neve
-$password = "root";      // Az adatbázis jelszava
+$password = "root";  // Az adatbázis jelszava
 $dbname = "webshop"; // Az adatbázis neve
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Kapcsolódás ellenőrzése
-if ($conn->connect_error) {
+if ($conn->connect_error)    {
     die("Connection failed: " . $conn->connect_error);
 }
 
-
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    
-    // Felhasználó ellenőrzése az adatbázisból
-    $sql = "SELECT * FROM users WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        
-        // Jelszó ellenőrzés (a jelszó hash-elve van az adatbázisban)
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['username'] = $username;
-            
-            exit();
-        } else {
-            $error_message = "Hibás felhasználónév vagy jelszó.";
-        }
-    } else {
-        $error_message = "Hibás felhasználónév vagy jelszó.";
-    }
+// POST kérések kezelése
+if ($stmt->num_rows > 0) {
+	$stmt->bind_result($id, $password);
+	$stmt->fetch();
+	// Account exists, now we verify the password.
+	// Note: remember to use password_hash in your registration file to store the hashed passwords.
+	if (password_verify($_POST['password'], $password)) {
+		// Verification success! User has logged-in!
+		// Create sessions, so we know the user is logged in, they basically act like cookies but remember the data on the server.
+		session_regenerate_id();
+		$_SESSION['loggedin'] = TRUE;
+		$_SESSION['name'] = $_POST['username'];
+		$_SESSION['id'] = $id;
+		echo 'Welcome back, ' . htmlspecialchars($_SESSION['name'], ENT_QUOTES) . '!';
+	} else {
+		// Incorrect password
+		echo 'Incorrect username and/or password!';
+	}
+} else {
+	// Incorrect username
+	echo 'Incorrect username and/or password!';
 }
+
+
+
+?>

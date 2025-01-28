@@ -5,7 +5,7 @@ $dbname = 'webshop';
 $username = 'root';
 $password = 'root';
 
-// Create a connection to the database
+// Create a connection to the database 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
