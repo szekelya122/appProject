@@ -69,8 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':email' => $email,
                 ]);
 
+               
+                header("Location: http://localhost/appProject/front/index.html?register=success");
                 echo "<p style='color: green;'>User registered successfully!</p>";
-                header("Location: http://localhost/appProject/front/index.html");
                 exit; // Always call exit after redirecting to prevent further script execution
             }
         } catch (PDOException $e) {

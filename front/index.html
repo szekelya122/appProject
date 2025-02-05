@@ -12,6 +12,28 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Function to check URL parameters
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // If the "register" parameter is "success", show the alert
+    if (getQueryParam('register') === 'success') {
+        Swal.fire({
+            title: 'Success!',
+            text: 'User registered successfully!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            // Clean the URL without reloading the page
+            window.history.replaceState(null, null, window.location.pathname);
+        });
+    }
+</script>
+
     <header class="header bg-dark text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="logo fs-3">Webshop</div>
@@ -19,7 +41,7 @@
                 <ul class="nav">
                     <li class="nav-item"><a class="nav-link text-white" href="#">Főoldal</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="shop.html">Bolt</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#">Kapcsolat</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="admin.html">Kapcsolat</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="register.html">Regisztráció</a></li>
                     <li class="nav-item"><a class="nav-link text-white" href="logIn.html">Bejelentkezés</a></li>
                 </ul>
