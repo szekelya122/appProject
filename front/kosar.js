@@ -1,27 +1,56 @@
-// Kosár kezelése
 document.addEventListener("DOMContentLoaded", () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const apiUrl = "http://localhost:8080/cart"; // Change to your actual backend URL
 
-    // Kosár frissítése a helyi tárolóban
-    const updateCart = () => {
-        localStorage.setItem("cart", JSON.stringify(cart));
-        displayCartItems();
-    };
-
-    // Termék hozzáadása a kosárhoz
-    const addToCart = (product) => {
-        const existingProduct = cart.find((item) => item.id === product.id);
-        if (existingProduct) {
-            existingProduct.quantity += 1;
-        } else {
-            cart.push({ ...product, quantity: 1 });
+    // Fetch and display cart items from the database
+    const fetchCart = async () => {
+        try {
+            const response = await fetch(apiUrl);
+            const cart = await response.json();
+            displayCartItems(cart);
+        } catch (error) {
+            console.error("Error fetching cart:", error);
         }
-        updateCart();
-        alert("A termék sikeresen hozzáadva a kosárhoz!");
     };
 
-    // Termékek megjelenítése a kosárban
-    const displayCartItems = () => {
+    // Add product to cart in the database
+    const addToCart = async (product) => {
+        try {
+            const response = await fetch(`${apiUrl}/add`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(product),
+            });
+
+            if (response.ok) {
+                alert("A termék sikeresen hozzáadva a kosárhoz!");
+                fetchCart();
+            } else {
+                alert("Hiba történt a kosár frissítésekor.");
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+        }
+    };
+
+    // Remove item from cart in the database
+    const removeFromCart = async (productId) => {
+        try {
+            const response = await fetch(`${apiUrl}/remove/${productId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                fetchCart();
+            } else {
+                alert("Hiba történt a termék eltávolításakor.");
+            }
+        } catch (error) {
+            console.error("Error removing from cart:", error);
+        }
+    };
+
+    // Display cart items
+    const displayCartItems = (cart) => {
         const cartContainer = document.querySelector("#cartItems");
         const cartSummary = document.querySelector("#cartSummary");
         if (!cartContainer || !cartSummary) return;
@@ -34,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         let total = 0;
-        cart.forEach((item, index) => {
+        cart.forEach((item) => {
             total += item.price * item.quantity;
             cartContainer.innerHTML += `
                 <div class="card mb-3 bg-dark border-warning">
@@ -47,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <h5 class="card-title text-warning">${item.name}</h5>
                                 <p class="card-text">Ár: ${item.price.toLocaleString()} Ft</p>
                                 <p class="card-text">Mennyiség: ${item.quantity}</p>
-                                <button class="btn btn-danger" data-index="${index}">Eltávolítás</button>
+                                <button class="btn btn-danger" data-id="${item.id}">Eltávolítás</button>
                             </div>
                         </div>
                     </div>
@@ -56,29 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         cartSummary.innerHTML = `Összesen: ${total.toLocaleString()} Ft`;
-        addRemoveEventListeners();
-    };
 
-    // Termék eltávolítása
-    const removeFromCart = (index) => {
-        cart.splice(index, 1);
-        updateCart();
-    };
-
-    // Eltávolítás gombok eseménykezelőinek hozzáadása
-    const addRemoveEventListeners = () => {
         document.querySelectorAll(".btn-danger").forEach((button) => {
-            button.addEventListener("click", () => {
-                const index = button.getAttribute("data-index");
-                removeFromCart(index);
-            });
+            button.addEventListener("click", () => removeFromCart(button.getAttribute("data-id")));
         });
     };
 
-    // Kosár inicializálása
-    displayCartItems();
-
-    // Termék hozzáadása a bolt oldalon
+    // Handle add-to-cart button clicks
     document.querySelectorAll(".add-to-cart").forEach((button) => {
         button.addEventListener("click", () => {
             const product = {
@@ -86,8 +99,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 name: button.getAttribute("data-name"),
                 price: parseInt(button.getAttribute("data-price")),
                 image: button.getAttribute("data-image"),
+                quantity: 1, // Default quantity
             };
             addToCart(product);
         });
     });
+
+    // Initialize cart
+    fetchCart();
 });
