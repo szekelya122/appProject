@@ -15,6 +15,13 @@ class User {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getUserById() {
+        $query = "CALL GetUserById()";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     public function insertUser($username, $role, $address, $phonenumber, $email, $password) {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);

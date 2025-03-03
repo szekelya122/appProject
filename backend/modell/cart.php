@@ -1,18 +1,55 @@
 <?php
-// cart.php
-include 'webshop.php';
+// modell/cart.php
+session_start();
 
-class Cart {
-    private $conn;
+function addToCart($product_id, $quantity) {
+    global $conn;
 
-    public function __construct($db) {
-        $this->conn = $db;
+    
+    $sql = "SELECT name, price FROM products WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $product = $result->fetch_assoc();
+
+        if (isset($_SESSION['cart'][$product_id])) {
+            $_SESSION['cart'][$product_id]['quantity'] += $quantity;
+        } else {
+            $_SESSION['cart'][$product_id] = [
+                'name' => $product['name'],
+                'price' => $product['price'],
+                'quantity' => $quantity,
+            ];
+        }
     }
+}
 
-    public function addToCart($user_id, $product_id, $quantity) {
-        $query = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
-        $stmt = $this->conn->prepare($query);
-        return $stmt->execute([$user_id, $product_id, $quantity]);
+function updateCart($quantities) {
+    foreach ($quantities as $product_id => $quantity) {
+        if (isset($_SESSION['cart'][$product_id])) {
+            if ($quantity > 0) {
+                $_SESSION['cart'][$product_id]['quantity'] = $quantity;
+            } else {
+                unset($_SESSION['cart'][$product_id]);
+            }
+        }
     }
+}
+
+function removeFromCart($product_id) {
+    if (isset($_SESSION['cart'][$product_id])) {
+        unset($_SESSION['cart'][$product_id]);
+    }
+}
+
+function getCartTotal() {
+    $total = 0;
+    foreach ($_SESSION['cart'] as $item) {
+        $total += $item['price'] * $item['quantity'];
+    }
+    return $total;
 }
 ?>

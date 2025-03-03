@@ -21,5 +21,12 @@ class Order {
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([$user_id, $product_id, $quantity]);
     }
+    public function getOrderById() {
+        $query = "CALL GetOrderById()";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }
 ?>

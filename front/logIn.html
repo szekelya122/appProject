@@ -9,16 +9,19 @@
 
 </head>
 <body style="background-color: #121212; color: #fff;">
+
+    
+
     <header class="header bg-dark text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="logo fs-3">Webshop</div>
             <nav class="nav">
                 <ul class="nav">
-                    <li class="nav-item"><a class="nav-link text-white" href="index.html">Főoldal</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="shop.html">Bolt</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../front/index.html">Főoldal</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../backend/shop.php">Bolt</a></li>
                 
-                    <li class="nav-item"><a class="nav-link text-white" href="register.html">Regisztráció</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="logIn.html">Bejelentkezés</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../front/register.html">Regisztráció</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="../front/logIn.html">Bejelentkezés</a></li>
                 </ul>
             </nav>
             
@@ -30,22 +33,18 @@
                 <div class="login-container p-4 bg-dark border rounded border-gold">
                     <h2 class="text-center text-gold mb-4">Bejelentkezés</h2>
 
-                    <form method="POST" action="../backend/login.php">
-
-                    <form method="post" action="login.php">
+                    <form method="post" action="../backend/login.php">
 
                         <div class="mb-3">
-                            <input type="text" class="form-control bg-black text-white border-gold" placeholder="Username" required>
+                            <input type="text" name="username" class="form-control bg-black text-white border-gold" placeholder="Username" required>
                         </div>
                         <div class="mb-3">
-                            <input type="password" class="form-control bg-black text-white border-gold" placeholder="Password" required>
+                            <input type="password" name="password" class="form-control bg-black text-white border-gold" placeholder="Password" required>
                         </div>
 
                         <button type="submit" class="btn btn-gold w-100">Bejelentkezés</button>
                     </form>
-                    <div class="text-center mt-3">
-                        <a href="#" class="text-gold text-decoration-none"><i>Elfelejtett jelszó?</i></a>
-                    </div>
+                  
                     <div class="text-center mt-3">
                         <span>Nincs még fiókod? </span>
                         <a href="register.html" class="text-gold text-decoration-none">Regisztráció</a>
@@ -55,6 +54,7 @@
             </div>
         </div>
     </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

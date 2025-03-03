@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Product</title>
+</head>
+<body>
+    <h1>Upload a New Product</h1>
+    <form action="../backend/upload_product.php" method="POST" enctype="multipart/form-data">
+        <label for="name">Product Name:</label>
+        <input type="text" name="name" id="name" required>
+    
+        <label for="price">Price:</label>
+        <input type="number" name="price" id="price" step="0.01" required>
+    
+        <label for="category">Category:</label>
+        <input type="text" name="category" id="category" required>
+    
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" required>
+    
+        <label for="image">Product Image:</label>
+        <input type="file" name="image" id="image" required>
+    
+        <button type="submit">Upload Product</button>
+    </form>
+</body>
+</html>

@@ -1,28 +1,15 @@
 <?php
-// Database credentials
-$host = 'localhost';
-$dbname = 'webshop';
-$username = 'root';
-$password = 'root';
-
-// Display errors for debugging during development
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+include "modell/webshop.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Create database connection
     $conn = new mysqli($host, $username, $password, $dbname);
 
-    // Check for connection errors
     if ($conn->connect_error) {
         die("Database connection failed: " . $conn->connect_error);
     }
 
-    // Set character set to handle special characters (e.g., emojis)
     $conn->set_charset("utf8mb4");
 
-    // Validate and sanitize input data
     $name = isset($_POST['name']) ? trim($_POST['name']) : null;
     $price = isset($_POST['price']) ? filter_var($_POST['price'], FILTER_VALIDATE_FLOAT) : null;
 
@@ -33,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Invalid price value.");
     }
 
-    // Handle file upload
     $targetFile = null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $allowedExtensions = ['jpg', 'jpeg', 'png'];
@@ -58,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Error with the uploaded image.");
     }
 
-    // Insert product into the database
     $stmt = $conn->prepare("INSERT INTO product (name, price, img_path) VALUES (?, ?, ?)");
     if ($stmt === false) {
         die("Database error: " . $conn->error);
@@ -74,23 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt->close();
-
-    // Fetch and display all products
-    $result = $conn->query("SELECT * FROM product");
-    if ($result->num_rows > 0) {
-        echo "<h1>Products</h1><ul>";
-        while ($row = $result->fetch_assoc()) {
-            echo "<li>";
-            echo "<img src='" . htmlspecialchars($row['img_path']) . "' alt='" . htmlspecialchars($row['name']) . "' style='width:150px; height:auto;'><br>";
-            echo "<strong>" . htmlspecialchars($row['name']) . "</strong><br>";
-            echo "Price: €" . number_format($row['price'], 2) . "<br>";
-            echo "</li>";
-        }
-        echo "</ul>";
-    } else {
-        echo "No products found.";
-    }
-
     $conn->close();
 }
 ?>

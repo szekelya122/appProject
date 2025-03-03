@@ -1,42 +1,42 @@
+
 <?php
 session_start();
 
-// MySQL kapcsolódás
-$servername = "localhost";
-$username = "root";  // Az adatbázis felhasználó neve
-$password = "root";  // Az adatbázis jelszava
-$dbname = "webshop"; // Az adatbázis neve
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+include "/modell/webshop.php";
 
-// Kapcsolódás ellenőrzése
-if ($conn->connect_error)    {
-    die("Connection failed: " . $conn->connect_error);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    try {
+        $pdo = new PDO("mysql:host=$host;dbname=webshop", "root", "root");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Fetch user data including role
+        $stmt = $pdo->prepare("SELECT user_id, username, password, role FROM users WHERE username = :username");
+        $stmt->execute(['username' => $username]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+            // Login successful
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role']; 
+
+            // Redirect based on role
+            if ($user['role'] === 'admin') {
+                header('Location: ../front/admin/admin.html');
+            } else {
+                header('Location: ../front/index.html?login=success');
+            }
+            exit();
+        } else {
+            // Invalid credentials
+            echo "<script>alert('Hibás felhasználónév vagy jelszó!'); window.location.href = '../fornt/login.html';</script>";
+        }
+    } catch (PDOException $e) {
+        die("Database error: " . $e->getMessage());
+    }
 }
-
-// POST kérések kezelése
-if ($stmt->num_rows > 0) {
-	$stmt->bind_result($id, $password);
-	$stmt->fetch();
-	// Account exists, now we verify the password.
-	// Note: remember to use password_hash in your registration file to store the hashed passwords.
-	if (password_verify($_POST['password'], $password)) {
-		// Verification success! User has logged-in!
-		// Create sessions, so we know the user is logged in, they basically act like cookies but remember the data on the server.
-		session_regenerate_id();
-		$_SESSION['loggedin'] = TRUE;
-		$_SESSION['name'] = $_POST['username'];
-		$_SESSION['id'] = $id;
-		echo 'Welcome back, ' . htmlspecialchars($_SESSION['name'], ENT_QUOTES) . '!';
-	} else {
-		// Incorrect password
-		echo 'Incorrect username and/or password!';
-	}
-} else {
-	// Incorrect username
-	echo 'Incorrect username and/or password!';
-}
-
-
-
 ?>

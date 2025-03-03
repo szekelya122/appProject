@@ -1,26 +1,15 @@
 <?php
-// Database configuration
-$host = 'localhost';
-$dbname = 'webshop';
-$username = 'root';
-$password = 'root';
 
-// Create a connection to the database 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
+include "modell/webshop.php";
 
-// Check if form is submitted
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Collect and sanitize user inputs
+    
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
 
-    // Validate inputs
+    
     $errors = [];
     if (empty($username)) {
         $errors[] = "Username is required.";
@@ -35,13 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($errors) {
-        // Display errors
+      
         foreach ($errors as $error) {
             echo "<p style='color: red;'>$error</p>";
         }
     } else {
         try {
-            // Check if the email or username already exists
+           
             $checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = :email";
             $stmt = $pdo->prepare($checkEmailQuery);
             $stmt->execute([':email' => $email]);
@@ -57,10 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } elseif ($usernameExists) {
                 echo "<p style='color: red;'>A user with this username already exists.</p>";
             } else {
-                // Hash the password before storing it
+                
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-                // Insert user into the database
+                
                 $sql = "INSERT INTO users (username, password, email) VALUES (:username, :password, :email)";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([
@@ -70,9 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                
-                header("Location: http://localhost/appProject/front/index.html?register=success");
-                echo "<p style='color: green;'>User registered successfully!</p>";
-                exit; // Always call exit after redirecting to prevent further script execution
+                header("Location: ../front/index.html?register=success");
+                
+                exit; 
             }
         } catch (PDOException $e) {
             echo "<p style='color: red;'>Error: " . $e->getMessage() . "</p>";

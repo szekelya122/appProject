@@ -1,5 +1,6 @@
 <?php
- include("config.php");
+ 
+include "modell/webshop.php";
 session_start();
 session_destroy();
 header("Location: login.php");

@@ -1,45 +1,35 @@
 <?php
-// Database connection settings
-$servername = "localhost";
-$username = "root";
-$password = "root"; // Replace with your MySQL root password
-$dbname = "webshop";
+header("Content-Type: application/json");
 
-try {
-    // Create a new PDO connection
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Function to add items to the cart
-    function addToCart($userId, $productId, $quantity) {
-        global $conn;
+include "modell/webshop.php";
 
-        // Prepare the SQL statement to call the stored procedure
-        $stmt = $conn->prepare("CALL AddToCart(:user_id, :product_id, :quantity)");
 
-        // Bind parameters
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $stmt->bindParam(':product_id', $productId, PDO::PARAM_INT);
-        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
 
-        // Execute the stored procedure
-        $stmt->execute();
 
-        echo "Product added to cart successfully!";
-    }
+$data = json_decode(file_get_contents("php://input"), true);
 
-    // Example usage
-    $userId = 1;         // Replace with the actual user ID
-    $productId = 1;      // Replace with the actual product ID
-    $quantity = 2;       // Replace with the quantity to add
-
-    // Add the product to the cart
-    addToCart($userId, $productId, $quantity);
-
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+if (!isset($data["userId"], $data["productId"], $data["quantity"])) {
+    echo json_encode(["success" => false, "error" => "Missing parameters"]);
+    exit();
 }
 
-// Close the connection
-$conn = null;
+$userId = intval($data["user_id"]);
+$productId = intval($data["id"]);
+$quantity = intval($data["quantity"]);
+
+
+$query = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)
+          ON DUPLICATE KEY UPDATE quantity = quantity + ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("iiii", $userId, $productId, $quantity, $quantity);
+
+if ($stmt->execute()) {
+    echo json_encode(["success" => true, "message" => "Termék sikeresen hozzáadva a kosárhoz"]);
+} else {
+    echo json_encode(["success" => false, "error" => "Database error"]);
+}
+
+$stmt->close();
+$conn->close();
 ?>
