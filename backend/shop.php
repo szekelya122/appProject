@@ -68,8 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
     <meta name="description" content="Fedezze fel exkluzív prémium termékeinket. Vásároljon most, és tapasztalja meg a luxust.">
     <title>Termékek - Webshop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../front/shop.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../front/shop.css      ">
 </head>
 <body style="background-color: #121212; color: #fff;">
     <!-- Navbar -->
@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
                         <i class="fas fa-shopping-cart text-white me-1"></i>
                         <span class="text-white">Kosár</span>
                     </a>
-                    <a href="logIn.html" class="btn btn-outline-gold me-2">Bejelentkezés</a>
-                    <a href="register.html" class="btn btn-gold">Regisztráció</a>
+                    <a href="../front/logIn.html" class="btn btn-outline-gold me-2">Bejelentkezés</a>
+                    <a href="../front/register.html" class="btn btn-gold">Regisztráció</a>
                 </div>
             </div>
         </div>
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
                 <?php foreach ($products as $product): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card bg-dark text-white">
-                            <img src="<?= htmlspecialchars($product['img_path']) ?>" class="card-img-top" alt="<?= htmlspecialchars($product['name']) ?>">
+                            <img src="<?= htmlspecialchars($product['img_path']) ?>" class="card-img-top cardimage"  alt="<?= htmlspecialchars($product['name']) ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($product['name']) ?></h5>
                                 <p class="card-text">Price: €<?= number_format($product['price'], 2) ?></p>
