@@ -1,12 +1,11 @@
-@ -0,0 +1,360 @@
 -- phpMyAdmin SQL Dump
 -- version 5.1.2
 -- https://www.phpmyadmin.net/
 --
--- Gép: localhost:3306
--- Létrehozás ideje: 2025. Jan 28. 13:04
--- Kiszolgáló verziója: 5.7.24
--- PHP verzió: 8.3.1
+-- Host: localhost:3306
+-- Generation Time: Mar 17, 2025 at 12:21 PM
+-- Server version: 5.7.24
+-- PHP Version: 8.3.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -19,17 +18,50 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Adatbázis: `webshop`
+-- Database: `webshop`
 --
 
 DELIMITER $$
 --
--- Eljárások
+-- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddToCart` (IN `p_user_id` BIGINT, IN `p_product_id` BIGINT, IN `p_quantity` INT)   BEGIN
+    DECLARE v_existing_quantity INT;
+    
+    -- Check if the item already exists in the cart
+    SELECT quantity INTO v_existing_quantity
+    FROM cart
+    WHERE user_id = p_user_id AND product_id = p_product_id;
+
+    IF v_existing_quantity IS NOT NULL THEN
+        -- Update quantity if item exists
+        UPDATE cart
+        SET quantity = quantity + p_quantity
+        WHERE user_id = p_user_id AND product_id = p_product_id;
+    ELSE
+        -- Insert new item into the cart
+        INSERT INTO cart (user_id, product_id, quantity)
+        VALUES (p_user_id, p_product_id, p_quantity);
+    END IF;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ClearCart` (IN `p_user_id` BIGINT)   BEGIN
+    DELETE FROM cart
+    WHERE user_id = p_user_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteCategory` (IN `p_category_id` INT)   BEGIN  
+    DELETE FROM categories WHERE id = p_category_id;  
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteOrder` (IN `p_order_id` INT)   BEGIN
       DELETE FROM orders
       WHERE id = p_order_id;
   END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `DeleteUser` (IN `p_user_id` INT)   BEGIN  
+    DELETE FROM users WHERE user_id = p_user_id;  
+END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAllCategories` ()   BEGIN
     SELECT 
@@ -55,6 +87,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetAllProducts` ()   BEGIN
         p.category_id = c.id;
 END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetCategoryById` (IN `id` INT)   SELECT * FROM categories WHERE id = categories.id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOrderById` (IN `orderid` INT)   SELECT * FROM orders WHERE orderid = orders.id$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOrdersByUser` (IN `p_user_id` INT)   BEGIN
       SELECT 
           o.id AS order_id,
@@ -68,6 +104,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOrdersByUser` (IN `p_user_id` IN
       JOIN product p ON o.product_id = p.product_id
       WHERE o.user_id = p_user_id;
   END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductById` (IN `id` INT)   SELECT * FROM product WHERE id = product.id$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductDetails` (IN `p_product_id` INT)   BEGIN
     SELECT 
@@ -93,10 +131,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductsByCategory` (IN `p_categ
       WHERE category_id = p_category_id;
   END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertUser` (IN `p_username` VARCHAR(100), IN `p_role` VARCHAR(50), IN `p_address` VARCHAR(255), IN `p_phonenumber` VARCHAR(15), IN `p_email` VARCHAR(100))   BEGIN
-      INSERT INTO users (username, role, address, phonenumber, email)
-      VALUES (p_username, p_role, p_address, p_phonenumber, p_email);
-  END$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserById` (IN `id` INT)   SELECT * FROM users WHERE id = users.user_id$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertCategory` (IN `p_category_name` VARCHAR(100))   BEGIN  
+    INSERT INTO categories (category_name) VALUES (p_category_name);  
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertUser` (IN `p_username` VARCHAR(100), IN `p_role` VARCHAR(50), IN `p_address` VARCHAR(255), IN `p_phonenumber` VARCHAR(15), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(64))   INSERT INTO users (username, role, address, phonenumber, email, password)
+      VALUES (p_username, p_role, p_address, p_phonenumber, p_email,p_password)$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `PlaceOrder` (IN `p_user_id` INT, IN `p_product_id` INT, IN `p_quantity` INT)   BEGIN
       DECLARE v_product_quantity INT;
@@ -121,22 +163,58 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `PlaceOrder` (IN `p_user_id` INT, IN
       END IF;
   END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `RemoveFromCart` (IN `p_cart_id` BIGINT)   BEGIN
+    DELETE FROM cart
+    WHERE id = p_cart_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateCategory` (IN `p_category_id` INT, IN `p_new_name` VARCHAR(100))   BEGIN  
+    UPDATE categories  
+    SET category_name = p_new_name  
+    WHERE id = p_category_id;  
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateOrderStatus` (IN `p_order_id` INT, IN `p_new_status` VARCHAR(50))   BEGIN  
+    UPDATE orders  
+    SET status = p_new_status  
+    WHERE id = p_order_id;  
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateProductPrice` (IN `p_product_id` INT, IN `p_new_price` DECIMAL(10,2))   BEGIN
       UPDATE product
       SET price = p_new_price
       WHERE product_id = p_product_id;
   END$$
 
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UpdateProductStock` (IN `p_product_id` INT, IN `p_new_quantity` INT)   BEGIN  
+    UPDATE product  
+    SET quantity = p_new_quantity  
+    WHERE id = p_product_id;  
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ViewCart` (IN `p_user_id` BIGINT)   BEGIN
+    SELECT 
+        c.id AS cart_id,
+        p.name AS product_name,
+        p.price AS unit_price,
+        c.quantity,
+        (p.price * c.quantity) AS total_price,
+        c.added_at
+    FROM cart c
+    JOIN product p ON c.product_id = p.id
+    WHERE c.user_id = p_user_id;
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `cart`
+-- Table structure for table `cart`
 --
 
 CREATE TABLE `cart` (
-  `cart_id` bigint(20) UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `quantity` int(11) NOT NULL DEFAULT '1',
@@ -146,7 +224,7 @@ CREATE TABLE `cart` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `categories`
+-- Table structure for table `categories`
 --
 
 CREATE TABLE `categories` (
@@ -155,25 +233,16 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- A tábla adatainak kiíratása `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`id`, `category_name`) VALUES
-(1, 'Electronics'),
-(2, 'Books'),
-(3, 'Clothing'),
-(4, 'Home Appliances'),
-(5, 'Beauty Products'),
-(6, 'Sports'),
-(7, 'Toys'),
-(8, 'Furniture'),
-(9, 'Automotive'),
-(10, 'Groceries');
+(1, 'Gyűrű');
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
@@ -186,7 +255,7 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- A tábla adatainak kiíratása `orders`
+-- Dumping data for table `orders`
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `product_id`, `order_quantity`, `order_date`, `status`) VALUES
@@ -204,38 +273,31 @@ INSERT INTO `orders` (`id`, `user_id`, `product_id`, `order_quantity`, `order_da
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `product`
+-- Table structure for table `product`
 --
 
 CREATE TABLE `product` (
-  `product_id` bigint(20) UNSIGNED NOT NULL,
-  `product_name` varchar(100) NOT NULL,
-  `product_type` varchar(50) DEFAULT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `product_quantity` int(11) NOT NULL,
-  `category_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `img_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- A tábla adatainak kiíratása `product`
+-- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`product_id`, `product_name`, `product_type`, `price`, `product_quantity`, `category_id`) VALUES
-(1, 'Smartphone', 'Electronics', '699.99', 50, 1),
-(2, 'Laptop', 'Electronics', '1199.99', 30, 1),
-(3, 'Fiction Book', 'Books', '19.99', 200, 2),
-(4, 'T-Shirt', 'Clothing', '14.99', 150, 3),
-(5, 'Microwave', 'Home Appliances', '89.99', 20, 4),
-(6, 'Face Cream', 'Beauty Products', '24.99', 100, 5),
-(7, 'Basketball', 'Sports', '29.99', 60, 6),
-(8, 'Stuffed Bear', 'Toys', '15.99', 80, 7),
-(9, 'Dining Table', 'Furniture', '499.99', 10, 8),
-(10, 'Car Oil', 'Automotive', '39.99', 25, 9);
+INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `category_id`, `img_path`) VALUES
+(1, 'Gyűrű', '30.00', 30, 1, 'uploads/67d7edf19604e.jpg'),
+(2, 'Gyűrű1', '3000.00', 300, 1, 'uploads/67d8073d77ac1.jpg'),
+(3, 'Gyűrű', '31111.00', 2, 1, 'uploads/67d8076d76489.jpg');
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -250,14 +312,13 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- A tábla adatainak kiíratása `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `phonenumber`, `email`, `password`) VALUES
 (2, 'Gipsz Jakab', 'Customer', '2024-11-25 10:16:53', 'Lehel sor 2', '06202369229', 'gipszjakab1976@gmail.com', ''),
 (3, 'Hologram Ákos', 'Customer', '2024-11-25 10:17:50', 'Lehel sor 3', '06202369220', 'Hmi@gmail.com', ''),
 (4, 'Kökényesi MC István', 'customer', '2025-01-09 09:05:45', NULL, NULL, 'kalanyoskornel1976@gmail.com', '$2y$10$mssAPBR5r9cRS2MmhAwu9.8qtGsWJ2xNiaLz3f/CRQ9ctNOp/WXRe'),
-(5, 'Armin', 'customer', '2025-01-09 09:20:21', NULL, NULL, 'szekelyarmin121@gmail.com', '$2y$10$TJU2rst3ObMiqCU8m.EC/OrSg7FajMV0DokznKsTrTD4FE428T1Eq'),
 (6, 'KukKornél', 'customer', '2025-01-09 09:45:15', NULL, NULL, 'dagadtkornel12@gmail.com', '$2y$10$iegRV2q7owQ4IH3il5rFleBcb4J6vaKuFK.fShKdMzLgi1uzLL5Wa'),
 (7, 'Jane Doe', 'customer', '2025-01-16 08:47:54', '123 Main St', '1234567890', 'jane.doe@example.com', '$2y$10$EXAMPLEPASSWORDHASH1'),
 (8, 'John Smith', 'customer', '2025-01-16 08:47:54', '456 Elm St', '2345678901', 'john.smith@example.com', '$2y$10$EXAMPLEPASSWORDHASH2'),
@@ -268,92 +329,93 @@ INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `ph
 (13, 'Eve Blue', 'customer', '2025-01-16 08:47:54', '159 Birch St', '7890123456', 'eve.blue@example.com', '$2y$10$EXAMPLEPASSWORDHASH7'),
 (14, 'Grace Red', 'customer', '2025-01-16 08:47:54', '753 Walnut St', '8901234567', 'grace.red@example.com', '$2y$10$EXAMPLEPASSWORDHASH8'),
 (15, 'Hank Silver', 'admin', '2025-01-16 08:47:54', '951 Chestnut St', '9012345678', 'hank.silver@example.com', '$2y$10$EXAMPLEPASSWORDHASH9'),
-(16, 'Ivy Gold', 'customer', '2025-01-16 08:47:54', '147 Spruce St', '0123456789', 'ivy.gold@example.com', '$2y$10$EXAMPLEPASSWORDHASH10');
+(16, 'Ivy Gold', 'customer', '2025-01-16 08:47:54', '147 Spruce St', '0123456789', 'ivy.gold@example.com', '$2y$10$EXAMPLEPASSWORDHASH10'),
+(17, 'Kakifej47', 'customer', '2025-02-05 08:28:46', NULL, NULL, 'kkkkkk@gmail.com', '$2y$10$RQtI0It9MfYi8Byql.daJOcclKsWpOBApUna9KqqcqDDYNTQ5PLdO'),
+(18, '312', 'customer', '2025-02-05 08:31:34', NULL, NULL, '313@ADA.VCO', '$2y$10$mShfDcqRporAScNE2RyCyOtmJ0emY0wo.uicuHjlURha3Yp546g46'),
+(19, '31213', 'customer', '2025-02-05 08:32:22', NULL, NULL, '333413@ADA.VCO', '$2y$10$2apmWjSyrwWWiPh8knivwOjPTXV.ohCHrZKeO.eQ/Q3IkuqwZFqJy'),
+(20, '2133213', 'customer', '2025-02-05 08:37:18', NULL, NULL, '2131@aq.com', '$2y$10$KyyPb0cfJ2JY2DTdGVawh.B3HpVJ0Z6wJzmlKLB0eXcnSYrLOsaD6'),
+(21, 'weqeqw', 'customer', '2025-02-05 08:37:44', NULL, NULL, 'e@adsda.com', '$2y$10$mTfXtdAudtQF.m3e1wSfp.5NoHtW4alDUcPACUuOgeA/wRLCTzG.y'),
+(22, 'Armin', 'customer', '2025-02-05 08:38:49', NULL, NULL, 'szekelyarmin121@gmail.com', '$2y$10$ANywXQs3Jp9Zu/SYQSzJBOkxuilIZ1n23HG2zQZpwq2l5R76atqAy'),
+(23, 'kosa', 'customer', '2025-02-05 09:27:00', NULL, NULL, 'kosar@gmail.com', '$2y$10$fgvhIWeXAp3.qNGkio6J3OBPArSIZ7R7UFDL74a76LTnEFvyBUkLq'),
+(24, 'Armin333', 'customer', '2025-03-03 09:11:04', NULL, NULL, 'szekelyarmin12331@gmail.com', '$2y$10$uX8vnte2HboxvBk2chifL.7Vr6nQwt4s.srSjTqJLhxIIX5l9u3U.'),
+(25, '3131', 'customer', '2025-03-03 09:25:06', NULL, NULL, '31312@gmail.com', '$2y$10$sIh0rXPdVFMcbQiDAEhexOiJrM1i/yibpOR5pk8m8mBlmNX.pR2TC'),
+(27, '123', 'customer', '2025-03-03 11:21:33', NULL, NULL, 'test@gmail.com', '$2y$10$5puf4X5PpX.bU.Tt7FfIKuQxRlYzOfABtG.HfXSJ.Jty0hj3ewncG'),
+(31, 'admin', 'admin', '2025-03-03 12:29:16', NULL, NULL, 'admin@gmail.com', '$2y$10$KN9v8nX/C9zcUuh5B.d.9exqMa3q3vTGCl8StHRvCyE2Hu1qv/nia'),
+(32, '12312312312312', 'customer', '2025-03-04 09:03:44', NULL, NULL, 'szekelyarmin121231313211@gmail.com', '$2y$10$MaqmcVodPbL6BqTV9GMwh.bnEUQlmObucC3vfL.a2ItbDWvQpiGqW'),
+(33, '123123111', 'customer', '2025-03-04 12:13:03', NULL, NULL, '1231231213@gmail.com', '$2y$10$Ggh/oDFG5lskKZmG9cevluMG2rDW5tcHmQqD/oFSK11RTIgBNs/XG');
 
 --
--- Indexek a kiírt táblákhoz
+-- Indexes for dumped tables
 --
 
 --
--- A tábla indexei `cart`
+-- Indexes for table `cart`
 --
 ALTER TABLE `cart`
-  ADD PRIMARY KEY (`cart_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `product_id` (`product_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
--- A tábla indexei `categories`
+-- Indexes for table `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`);
 
 --
--- A tábla indexei `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `id` (`id`);
 
 --
--- A tábla indexei `product`
+-- Indexes for table `product`
 --
 ALTER TABLE `product`
-  ADD PRIMARY KEY (`product_id`),
-  ADD UNIQUE KEY `product_id` (`product_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `product_id` (`id`);
 
 --
--- A tábla indexei `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `user_id` (`user_id`);
+  ADD UNIQUE KEY `user_id` (`user_id`),
+  ADD UNIQUE KEY `username` (`username`,`phonenumber`,`email`);
 
 --
--- A kiírt táblák AUTO_INCREMENT értéke
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT a táblához `cart`
+-- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT a táblához `categories`
+-- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT a táblához `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT a táblához `product`
+-- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `product_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT a táblához `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
-
---
--- Megkötések a kiírt táblákhoz
---
-
---
--- Megkötések a táblához `cart`
---
-ALTER TABLE `cart`
-  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
