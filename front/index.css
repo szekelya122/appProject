@@ -248,3 +248,7 @@ a:hover {
     background-image: url(kép.jpg) ;
 }
 */
+.dropdown-menu {
+    position: absolute;
+    z-index: 1050; /* Magasabb, mint más elemek */
+}
