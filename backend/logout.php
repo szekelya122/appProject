@@ -3,6 +3,6 @@
 include "modell/webshop.php";
 session_start();
 session_destroy();
-header("Location: login.php");
+header("Location: ../front/index.html");
 exit;
 ?>
