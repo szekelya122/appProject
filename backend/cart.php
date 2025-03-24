@@ -45,72 +45,8 @@ foreach ($_SESSION['cart'] as $item) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
-    <link rel="stylesheet" href="../front/cart.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-        }
-        th, td {
-            padding: 12px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        td input {
-            width: 50px;
-            text-align: center;
-        }
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .btn-primary {
-            background-color: #28a745;
-            color: white;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        .btn:hover {
-            opacity: 0.8;
-        }
-        .total-row {
-            font-size: 18px;
-            font-weight: bold;
-            background-color: #f1f1f1;
-        }
-    </style>
+    <link rel="stylesheet" href="cart.css">
+  
 </head>
 <body>
     <div class="container">
