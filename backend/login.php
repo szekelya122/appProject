@@ -1,39 +1,48 @@
-
 <?php
 session_start();
 
+// Helyes include útvonal
+include "../modell/webshop.php";
 
-include "/modell/webshop.php";
+// Ha a felhasználó már be van jelentkezve, jelenítsünk meg egy hibaüzenetet
+if ($_SESSION['user_id'] != null) {
+    echo "<script>alert('Már be vagy jelentkezve!'); window.location.href = '../front/index.php';</script>";
+    exit(); // Megállítjuk a további végrehajtást
+}   
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
     try {
+        // PDO kapcsolat beállítása
         $pdo = new PDO("mysql:host=$host;dbname=webshop", "root", "root");
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Fetch user data including role
+        // Felhasználó adatainak lekérdezése, beleértve a szerepkört is
         $stmt = $pdo->prepare("SELECT user_id, username, password, role FROM users WHERE username = :username");
         $stmt->execute(['username' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        // Ha a felhasználó létezik és a jelszó helyes
         if ($user && password_verify($password, $user['password'])) {
-            // Login successful
-            $_SESSION['user_id'] = $user['id'];
+            // Bejelentkezés sikeres
+            $_SESSION['user_id'] = $user['user_id']; // user_id kell
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role']; 
 
-            // Redirect based on role
+            // Átirányítás szerepkör alapján
             if ($user['role'] === 'admin') {
-                header('Location: ../front/admin/admin.html');
+                http_response_code(200);
+                header('Location: ../front/admin.php');
             } else {
-                header('Location: ../front/index.html?login=success');
+                http_response_code(200);
+                header('Location: ../front/index.php?login=success');
             }
             exit();
         } else {
-            // Invalid credentials
-            echo "<script>alert('Hibás felhasználónév vagy jelszó!'); window.location.href = '../fornt/login.html';</script>";
+            // Hibás felhasználónév vagy jelszó
+            echo "<script>alert('Hibás felhasználónév vagy jelszó!'); window.location.href = '../front/login.php';</script>";
         }
     } catch (PDOException $e) {
         die("Database error: " . $e->getMessage());

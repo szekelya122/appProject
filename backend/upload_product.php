@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+
 include "modell/webshop.php"; // Ensure this file properly initializes $pdo
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -65,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             http_response_code(200);
-            echo json_encode(["message" => "Product uploaded successfully!", "success" => true]);
+            echo ("Product uploaded successfully!") ;
         } else {
             throw new Exception("Failed to save product. Please try again.");
         }

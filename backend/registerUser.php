@@ -7,20 +7,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
+    $passwordConfirm = trim($_POST['passwordConfirm']);
     $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
 
     
     $errors = [];
     if (empty($username)) {
-        $errors[] = "Username is required.";
+        $errors[] = "A felhasználó név megadása kötelező";
     }
     if (empty($password)) {
-        $errors[] = "Password is required.";
+        $errors[] = "A jelszó megadása kötelező!";
     }
     if (empty($email)) {
-        $errors[] = "Email is required.";
+        $errors[] = "Az Email Cim megadása kötelező!";
     } elseif (!$email) {
-        $errors[] = "Invalid email address.";
+        $errors[] = "Nem megfelelő Email!";
+    }
+    if ($password != $passwordConfirm){
+        $errors[] = "A jelszó nem egyezik";
     }
 
     if ($errors) {
@@ -58,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':email' => $email,
                 ]);
 
-               
-                header("Location: ../front/index.html?register=success");
+                http_response_code(200);
+                header("Location: ../front/index.php?register=success");
                 
                 exit; 
             }
