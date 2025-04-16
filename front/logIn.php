@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop - Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="logIn.css">
+    <link rel="stylesheet" href="index.css">
 
 </head>
 <body style="background-color: #121212; color: #fff;">
@@ -66,12 +66,14 @@ session_start();
 
                
 
-                        <div class="mb-3">
-                            <input type="text" name="username" class="form-control bg-black text-white border-gold" placeholder="Felhasználónév" required>
-                        </div>
-                        <div class="mb-3">
-                            <input type="password" name="password" class="form-control bg-black text-white border-gold" placeholder="Jelszó" required>
-                        </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-gold">Felhasználónév:</label>
+                        <input type="text" id="username" name="username" class="form-control bg-black text-white border-gold" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label text-gold">Jelszó:</label>
+                        <input type="password" id="password" name="password" class="form-control bg-black text-white border-gold" required>
+                    </div>
 
                         <button type="submit" class="btn btn-gold w-100">Bejelentkezés</button>
                     </form>

@@ -92,7 +92,7 @@ session_start();
 
 
     <main>
-        <section class="hero bg-light text-center py-5 main">
+        <section class="hero text-center py-5 main">
             <div class="container back">
                 <h1 class="display-4">Üdvözlünk a Webshopban</h1>
                 <p class="lead">Fedezze fel az exkluzív termékeket és az időtlen dizájnokat.</p>
