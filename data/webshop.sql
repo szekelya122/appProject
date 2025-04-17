@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 17, 2025 at 12:21 PM
+-- Generation Time: Apr 17, 2025 at 11:51 AM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -224,24 +224,6 @@ CREATE TABLE `cart` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
---
-
-CREATE TABLE `categories` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `category_name` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `categories`
---
-
-INSERT INTO `categories` (`id`, `category_name`) VALUES
-(1, 'Gyűrű');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `orders`
 --
 
@@ -281,7 +263,7 @@ CREATE TABLE `product` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `quantity` int(11) NOT NULL,
-  `category_id` int(11) DEFAULT NULL,
+  `category` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `img_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -289,10 +271,16 @@ CREATE TABLE `product` (
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `category_id`, `img_path`) VALUES
-(1, 'Gyűrű', '30.00', 30, 1, 'uploads/67d7edf19604e.jpg'),
-(2, 'Gyűrű1', '3000.00', 300, 1, 'uploads/67d8073d77ac1.jpg'),
-(3, 'Gyűrű', '31111.00', 2, 1, 'uploads/67d8076d76489.jpg');
+INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `category`, `img_path`) VALUES
+(13, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8ba2651.jpg'),
+(14, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8e21153.jpg'),
+(15, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8edd17b.jpg'),
+(16, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8f850f4.jpg'),
+(17, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc916e52e.jpg'),
+(18, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc91e38a2.jpg'),
+(19, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc9287d72.jpg'),
+(20, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc934118f.jpg'),
+(21, 'Gyűrű', '4.00', 3, 'Gyűrű', '../backend/uploads/6800de064f8ff.jpg');
 
 -- --------------------------------------------------------
 
@@ -308,41 +296,22 @@ CREATE TABLE `users` (
   `address` varchar(255) DEFAULT NULL,
   `phonenumber` varchar(15) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(64) NOT NULL
+  `password` varchar(64) NOT NULL,
+  `Name` varchar(64) DEFAULT NULL,
+  `deleted_at` timestamp(6) NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `phonenumber`, `email`, `password`) VALUES
-(2, 'Gipsz Jakab', 'Customer', '2024-11-25 10:16:53', 'Lehel sor 2', '06202369229', 'gipszjakab1976@gmail.com', ''),
-(3, 'Hologram Ákos', 'Customer', '2024-11-25 10:17:50', 'Lehel sor 3', '06202369220', 'Hmi@gmail.com', ''),
-(4, 'Kökényesi MC István', 'customer', '2025-01-09 09:05:45', NULL, NULL, 'kalanyoskornel1976@gmail.com', '$2y$10$mssAPBR5r9cRS2MmhAwu9.8qtGsWJ2xNiaLz3f/CRQ9ctNOp/WXRe'),
-(6, 'KukKornél', 'customer', '2025-01-09 09:45:15', NULL, NULL, 'dagadtkornel12@gmail.com', '$2y$10$iegRV2q7owQ4IH3il5rFleBcb4J6vaKuFK.fShKdMzLgi1uzLL5Wa'),
-(7, 'Jane Doe', 'customer', '2025-01-16 08:47:54', '123 Main St', '1234567890', 'jane.doe@example.com', '$2y$10$EXAMPLEPASSWORDHASH1'),
-(8, 'John Smith', 'customer', '2025-01-16 08:47:54', '456 Elm St', '2345678901', 'john.smith@example.com', '$2y$10$EXAMPLEPASSWORDHASH2'),
-(9, 'Alice Brown', 'customer', '2025-01-16 08:47:54', '789 Oak St', '3456789012', 'alice.brown@example.com', '$2y$10$EXAMPLEPASSWORDHASH3'),
-(10, 'Bob White', 'customer', '2025-01-16 08:47:54', '321 Pine St', '4567890123', 'bob.white@example.com', '$2y$10$EXAMPLEPASSWORDHASH4'),
-(11, 'Charlie Black', 'admin', '2025-01-16 08:47:54', '654 Maple St', '5678901234', 'charlie.black@example.com', '$2y$10$EXAMPLEPASSWORDHASH5'),
-(12, 'Dave Green', 'customer', '2025-01-16 08:47:54', '987 Cedar St', '6789012345', 'dave.green@example.com', '$2y$10$EXAMPLEPASSWORDHASH6'),
-(13, 'Eve Blue', 'customer', '2025-01-16 08:47:54', '159 Birch St', '7890123456', 'eve.blue@example.com', '$2y$10$EXAMPLEPASSWORDHASH7'),
-(14, 'Grace Red', 'customer', '2025-01-16 08:47:54', '753 Walnut St', '8901234567', 'grace.red@example.com', '$2y$10$EXAMPLEPASSWORDHASH8'),
-(15, 'Hank Silver', 'admin', '2025-01-16 08:47:54', '951 Chestnut St', '9012345678', 'hank.silver@example.com', '$2y$10$EXAMPLEPASSWORDHASH9'),
-(16, 'Ivy Gold', 'customer', '2025-01-16 08:47:54', '147 Spruce St', '0123456789', 'ivy.gold@example.com', '$2y$10$EXAMPLEPASSWORDHASH10'),
-(17, 'Kakifej47', 'customer', '2025-02-05 08:28:46', NULL, NULL, 'kkkkkk@gmail.com', '$2y$10$RQtI0It9MfYi8Byql.daJOcclKsWpOBApUna9KqqcqDDYNTQ5PLdO'),
-(18, '312', 'customer', '2025-02-05 08:31:34', NULL, NULL, '313@ADA.VCO', '$2y$10$mShfDcqRporAScNE2RyCyOtmJ0emY0wo.uicuHjlURha3Yp546g46'),
-(19, '31213', 'customer', '2025-02-05 08:32:22', NULL, NULL, '333413@ADA.VCO', '$2y$10$2apmWjSyrwWWiPh8knivwOjPTXV.ohCHrZKeO.eQ/Q3IkuqwZFqJy'),
-(20, '2133213', 'customer', '2025-02-05 08:37:18', NULL, NULL, '2131@aq.com', '$2y$10$KyyPb0cfJ2JY2DTdGVawh.B3HpVJ0Z6wJzmlKLB0eXcnSYrLOsaD6'),
-(21, 'weqeqw', 'customer', '2025-02-05 08:37:44', NULL, NULL, 'e@adsda.com', '$2y$10$mTfXtdAudtQF.m3e1wSfp.5NoHtW4alDUcPACUuOgeA/wRLCTzG.y'),
-(22, 'Armin', 'customer', '2025-02-05 08:38:49', NULL, NULL, 'szekelyarmin121@gmail.com', '$2y$10$ANywXQs3Jp9Zu/SYQSzJBOkxuilIZ1n23HG2zQZpwq2l5R76atqAy'),
-(23, 'kosa', 'customer', '2025-02-05 09:27:00', NULL, NULL, 'kosar@gmail.com', '$2y$10$fgvhIWeXAp3.qNGkio6J3OBPArSIZ7R7UFDL74a76LTnEFvyBUkLq'),
-(24, 'Armin333', 'customer', '2025-03-03 09:11:04', NULL, NULL, 'szekelyarmin12331@gmail.com', '$2y$10$uX8vnte2HboxvBk2chifL.7Vr6nQwt4s.srSjTqJLhxIIX5l9u3U.'),
-(25, '3131', 'customer', '2025-03-03 09:25:06', NULL, NULL, '31312@gmail.com', '$2y$10$sIh0rXPdVFMcbQiDAEhexOiJrM1i/yibpOR5pk8m8mBlmNX.pR2TC'),
-(27, '123', 'customer', '2025-03-03 11:21:33', NULL, NULL, 'test@gmail.com', '$2y$10$5puf4X5PpX.bU.Tt7FfIKuQxRlYzOfABtG.HfXSJ.Jty0hj3ewncG'),
-(31, 'admin', 'admin', '2025-03-03 12:29:16', NULL, NULL, 'admin@gmail.com', '$2y$10$KN9v8nX/C9zcUuh5B.d.9exqMa3q3vTGCl8StHRvCyE2Hu1qv/nia'),
-(32, '12312312312312', 'customer', '2025-03-04 09:03:44', NULL, NULL, 'szekelyarmin121231313211@gmail.com', '$2y$10$MaqmcVodPbL6BqTV9GMwh.bnEUQlmObucC3vfL.a2ItbDWvQpiGqW'),
-(33, '123123111', 'customer', '2025-03-04 12:13:03', NULL, NULL, '1231231213@gmail.com', '$2y$10$Ggh/oDFG5lskKZmG9cevluMG2rDW5tcHmQqD/oFSK11RTIgBNs/XG');
+INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `phonenumber`, `email`, `password`, `Name`, `deleted_at`) VALUES
+(2, 'Gipsz Jakab', 'Customer', '2024-11-25 10:16:53', 'Lehel sor 2', '06202369229', 'gipszjakab1976@gmail.com', '', NULL, NULL),
+(3, 'Hologram Ákos', 'Customer', '2024-11-25 10:17:50', 'Lehel sor 3', '06202369220', 'Hmi@gmail.com', '', NULL, NULL),
+(4, 'Kökényesi MC István', 'customer', '2025-01-09 09:05:45', NULL, NULL, 'kalanyoskornel1976@gmail.com', '$2y$10$mssAPBR5r9cRS2MmhAwu9.8qtGsWJ2xNiaLz3f/CRQ9ctNOp/WXRe', NULL, NULL),
+(31, 'admin', 'admin', '2025-03-03 12:29:16', NULL, NULL, 'admin@gmail.com', '$2y$10$KN9v8nX/C9zcUuh5B.d.9exqMa3q3vTGCl8StHRvCyE2Hu1qv/nia', NULL, NULL),
+(32, '123', 'customer', '2025-04-06 19:02:16', NULL, NULL, '31231231@gmail.com', '$2y$10$nrPjyrFjOqSyAMgf2ICiIOBzY44SLDEyRh.iWZM4bnrv3UO9IEGRC', NULL, NULL),
+(33, '123123121', 'customer', '2025-04-16 08:45:46', NULL, NULL, 'szekelyarmin121@gmail.com', '$2y$10$h6kByJ5V33QYrElhz1BInOO7n/FMX49w8v9YnChi5CuVi97odNEgW', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -353,13 +322,6 @@ INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `ph
 --
 ALTER TABLE `cart`
   ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
 
 --
 -- Indexes for table `orders`
@@ -394,12 +356,6 @@ ALTER TABLE `cart`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `categories`
---
-ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
@@ -409,7 +365,7 @@ ALTER TABLE `orders`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`

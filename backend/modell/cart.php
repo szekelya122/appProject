@@ -1,5 +1,5 @@
 <?php
-// modell/cart.php
+
 session_start();
 
 function addToCart($product_id, $quantity) {
