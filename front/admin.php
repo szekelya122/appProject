@@ -76,8 +76,20 @@ include "../backend/manage_admin.php";
                     <input type="number" name="price" id="price" class="form-control" step="0.01" required>
                 </div>
                 <div class="mb-3">
-                    <label for="category" class="form-label">Category:</label>
-                    <input type="text" name="category" id="category" class="form-control" required>
+                <label for="category_id" class="form-label">Category:</label>
+        <select name="category_id" id="category_id" class="form-control" required>
+            <option value="">-- Select Category --</option>
+            <?php if (isset($categories) && !empty($categories)): ?>
+                <?php foreach ($categories as $category): ?>
+                    <option value="<?= htmlspecialchars($category['id']) ?>">
+                        <?= htmlspecialchars($category['name']) ?>
+                    </option>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <option value="">No categories available</option>
+            <?php endif; ?>
+        </select>
+        
                 </div>
                 <div class="mb-3">
                     <label for="quantity" class="form-label">Quantity:</label>
@@ -89,7 +101,7 @@ include "../backend/manage_admin.php";
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Upload Product</button>
             </form>
-        </div>
+            </div>
 
         <!-- Manage Products -->
         <div class="col-md-4">

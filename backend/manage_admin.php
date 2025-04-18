@@ -3,6 +3,16 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 include "modell/webshop.php";
+
+
+$categories = [];
+try {
+    $stmt = $pdo->query("SELECT id, name FROM categories");
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // If there's an error, show a message
+    $feedbackMessage = "<div class='alert alert-danger mt-3' role='alert'>Error loading categories: " . htmlspecialchars($e->getMessage()) . "</div>";
+}
 function deleteProduct($pdo, $product_id) {
     $stmt = $pdo->prepare("DELETE FROM product WHERE id = :id");
     $stmt->bindParam(':id', $product_id, PDO::PARAM_INT);
@@ -43,17 +53,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Invalid user ID for deletion.");
             }
         }
+            
+           
+
 
         if (isset($_POST['name'])) {
             $name = trim($_POST['name']);
             $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
             $quantity = filter_var($_POST['quantity'], FILTER_VALIDATE_INT);
-            $category = trim($_POST['category']);
-
+            $category_id = filter_var($_POST['category_id'], FILTER_VALIDATE_INT);
             if (empty($name)) throw new Exception("Product name is required.");
             if ($price === false || $price <= 0) throw new Exception("Invalid price value.");
             if ($quantity === false || $quantity <= 0) throw new Exception("Invalid quantity.");
-            if (empty($category)) throw new Exception("Product category is required.");
+            if ($category_id === false || $category_id <= 0) throw new Exception("Product category is required.");
 
             $img_path = null;
             if (!empty($_FILES['image']['name'])) {
@@ -79,13 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $stmt = $pdo->prepare("
-                INSERT INTO product (name, price, quantity, category, img_path)
-                VALUES (:name, :price, :quantity, :category, :img_path)
+                INSERT INTO product (name, price, quantity, category_id, img_path)
+                VALUES (:name, :price, :quantity, :category_id, :img_path)
             ");
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':price', $price);
             $stmt->bindParam(':quantity', $quantity);
-            $stmt->bindParam(':category', $category);
+            $stmt->bindParam(':category_id', $category_id);
             $stmt->bindParam(':img_path', $img_path);
 
             if ($stmt->execute()) {

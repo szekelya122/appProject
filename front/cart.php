@@ -31,7 +31,7 @@ session_start();
                     <i class="fas fa-shopping-cart text-white me-1"></i>
                     <span class="text-white">Kosár</span>
                     <?php if (!empty($_SESSION['cart'])): ?>
-                        <span class="badge bg-danger ms-2">
+                        <span class="badge bg-danger ms-2"> 
                             <?= array_sum(array_column($_SESSION['cart'], 'quantity')) ?>
                         </span>
                     <?php endif; ?>
@@ -103,6 +103,8 @@ session_start();
 </body>
 </html>
     <a href="../front/shop.php" class="btn btn-outline-gold my-3">Vásárlás folytatása</a>
+    <a href="checkout.php" class="btn btn-success w-100 mt-3">Tovább a fizetéshez</a>
+
 
    
 </main>
