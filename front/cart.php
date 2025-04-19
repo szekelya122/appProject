@@ -3,12 +3,11 @@ session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-include "../backend/manage_cart.php"; // Include your cart management logic
+include "../backend/manage_cart.php"; 
 
-// Ensure the user is logged in
 $userId = $_SESSION['user_id'] ?? null;
 if (!$userId) {
-    header("Location: ../front/login.php"); // Redirect if not logged in
+    header("Location: ../front/login.php"); 
     exit;
 }
 
@@ -41,7 +40,7 @@ if (!$userId) {
                 <a href="../front/cart.php" class="d-flex align-items-center me-3 text-decoration-none text-gold">
                     <i class="fas fa-shopping-cart text-white me-1"></i>
                     <span class="text-white">Kosár</span>
-                    <?php if ($cartDetails): ?>
+                     <?php if ($cartDetails): ?>
                         <span class="badge bg-danger ms-2">
                             <?= array_sum(array_column($cartDetails, 'quantity')) ?>
                         </span>

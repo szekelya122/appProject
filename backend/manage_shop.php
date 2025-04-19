@@ -1,5 +1,5 @@
 <?php
-session_start(); // Add this if it's not already in your main file
+session_start(); 
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);

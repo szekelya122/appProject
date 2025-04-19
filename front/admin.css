@@ -249,3 +249,22 @@ form button:hover {
 .border-gold {
     border-color: #b8860b;
 }
+.btn-primary-admin {
+    background-color: #ffc107; /* Gold */
+    color: #000;
+    border: 1px solid #ffc107;
+}
+
+.btn-primary-admin:hover {
+    background-color: #e0a800;
+}
+
+.btn-danger-admin {
+    background-color: #dc3545; /* Red */
+    color: #fff;
+    border: 1px solid #dc3545;
+}
+
+.btn-danger-admin:hover {
+    background-color: #c82333;
+}

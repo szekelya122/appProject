@@ -104,31 +104,58 @@ include "../backend/manage_admin.php";
             </div>
 
         
-        <div class="col-md-4">
-            <h2>Manage Products</h2>
-            <ul class='list-group mt-3'>
-                <?php
-                $result = $pdo->query("SELECT * FROM product");
-                while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-                    echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
-                    echo "<div class='d-flex align-items-center'>";
-                    if ($row['img_path']) {
-                        echo "<img src='" . htmlspecialchars(str_replace('../backend/', '', $row['img_path'])) . "' alt='" . htmlspecialchars($row['name']) . "' style='width:50px; height:auto; margin-right: 10px;'>";
-                    }
-                    echo "<strong style='margin-right: 10px;'>" . htmlspecialchars($row['name']) . "</strong>";
-                    echo "€" . number_format($row['price'], 2);
-                    echo "</div>";
-                    echo "<form method='post' style='display:inline;'>";
-                    echo "<input type='hidden' name='delete_product_id' value='" . $row['id'] . "'>";
-                    echo "<button type='submit' class='btn btn-danger btn-sm'>Delete</button>";
-                    echo "</form>";
-                    echo "</li>";
-                }
-                ?>
-            </ul>
-        </div>
+<div class="col-md-4">
+    <h2>Manage Products</h2>
+    <ul class='list-group mt-3'>
+        <?php
+        $result = $pdo->query("SELECT * FROM product");
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
+            echo "<div class='d-flex align-items-center'>";
+            
+            echo "<strong style='margin-right: 10px;'>" . htmlspecialchars($row['name']) . "</strong>";
+            echo "€" . number_format($row['price'], 2);
+            echo "</div>";
+            echo "<div class='d-flex'>";
+            echo "<div class='btn-group' role='group' aria-label='Product actions'>";
+            
+            echo "<form method='post' style='display:inline;'>";
+            echo "<input type='hidden' name='delete_product_id' value='" . $row['id'] . "'>";
+            echo "<button type='submit' class='btn btn-danger btn-sm'>Delete</button>";
+            echo "</form>";
+        
+            echo "<button type='button' class='btn btn-warning btn-sm' data-bs-toggle='modal' data-bs-target='#updateProductModal" . $row['id'] . "'>Update Qty</button>";
+            echo "</div>";
+            echo "</div>";
+            echo "</li>";
 
-       
+            
+            echo "<div class='modal fade' id='updateProductModal" . $row['id'] . "' tabindex='-1' aria-labelledby='updateProductModalLabel" . $row['id'] . "' aria-hidden='true'>";
+            echo "<div class='modal-dialog'>";
+            echo "<div class='modal-content'>";
+            echo "<div class='modal-header'>";
+            echo "<h5 class='modal-title' id='updateProductModalLabel" . $row['id'] . "'>Update Quantity - " . htmlspecialchars($row['name']) . "</h5>";
+            echo "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>";
+            echo "</div>";
+            echo "<div class='modal-body'>";
+            echo "<form method='post'>";
+            echo "<input type='hidden' name='update_product_id' value='" . $row['id'] . "'>";
+            echo "<div class='mb-3'>";
+            echo "<label for='new_quantity_" . $row['id'] . "' class='form-label'>New Quantity:</label>";
+            echo "<input type='number' class='form-control' id='new_quantity_" . $row['id'] . "' name='new_quantity' value='" . $row['quantity'] . "' required>";
+            echo "</div>";
+            echo "<button type='submit' class='btn btn-primary w-100'>Update Quantity</button>";
+            echo "</form>";
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
+        }
+        ?>
+    </ul>
+</div>
+
+        
         <div class="col-md-4">
             <h2>Manage Users</h2>
             <ul class='list-group mt-3'>

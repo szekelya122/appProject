@@ -97,12 +97,17 @@ if (isset($_SESSION['user_id'])) {
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($product['name']) ?></h5>
                             <p class="card-text">Ár: €<?= number_format($product['price'], 2) ?></p>
-                            <p class="text-warning">Elérhető mennyiség: <?= $product['quantity'] ?> db</p>
-                            <form method="POST" action="">
-                                <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
-                                <input type="number" name="quantity" value="1" min="1" max="<?= $product['quantity'] ?>" class="form-control mb-2">
-                                <button type="submit" name="add_to_cart" class="btn btn-gold">Kosárba</button>
-                            </form>
+
+                            <?php if ($product['quantity'] > 0): ?>
+                                <p class="text-warning">Elérhető mennyiség: <?= $product['quantity'] ?> db</p>
+                                <form method="POST" action="">
+                                    <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
+                                    <input type="number" name="quantity" value="1" min="1" max="<?= $product['quantity'] ?>" class="form-control mb-2">
+                                    <button type="submit" name="add_to_cart" class="btn btn-gold">Kosárba</button>
+                                </form>
+                            <?php else: ?>
+                                <p class="text-danger">Jelenleg nem elérhető</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

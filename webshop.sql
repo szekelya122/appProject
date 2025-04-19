@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 17, 2025 at 11:51 AM
+-- Generation Time: Apr 19, 2025 at 08:12 PM
 -- Server version: 5.7.24
 -- PHP Version: 8.3.1
 
@@ -133,35 +133,36 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductsByCategory` (IN `p_categ
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserById` (IN `id` INT)   SELECT * FROM users WHERE id = users.user_id$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertCategory` (IN `p_category_name` VARCHAR(100))   BEGIN  
-    INSERT INTO categories (category_name) VALUES (p_category_name);  
+CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserLastFiveOrders` (IN `user_id_in` INT)   BEGIN
+    SELECT
+        o.id AS order_id,
+        o.order_date,
+        o.status,
+        oi.quantity,
+        oi.price AS ordered_price,
+        p.name AS product_name
+    FROM
+        orders o
+    JOIN
+        order_items oi ON o.id = oi.order_id
+    JOIN
+        product p ON oi.product_id = p.id
+    WHERE
+        o.user_id = user_id_in
+    ORDER BY
+        o.order_date DESC
+    LIMIT 5;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertCategory` (IN `p_name` VARCHAR(100))   BEGIN  
+    INSERT INTO categories (name) VALUES (p_name);  
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertUser` (IN `p_username` VARCHAR(100), IN `p_role` VARCHAR(50), IN `p_address` VARCHAR(255), IN `p_phonenumber` VARCHAR(15), IN `p_email` VARCHAR(100), IN `p_password` VARCHAR(64))   INSERT INTO users (username, role, address, phonenumber, email, password)
       VALUES (p_username, p_role, p_address, p_phonenumber, p_email,p_password)$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `PlaceOrder` (IN `p_user_id` INT, IN `p_product_id` INT, IN `p_quantity` INT)   BEGIN
-      DECLARE v_product_quantity INT;
-
-      -- Check product availability
-      SELECT product_quantity INTO v_product_quantity
-      FROM product
-      WHERE product_id = p_product_id;
-
-      IF v_product_quantity >= p_quantity THEN
-          -- Place the order
-          INSERT INTO orders (user_id, product_id, order_quantity, status)
-          VALUES (p_user_id, p_product_id, p_quantity, 'Processing');
-
-          -- Update product stock
-          UPDATE product
-          SET product_quantity = product_quantity - p_quantity
-          WHERE product_id = p_product_id;
-      ELSE
-          SIGNAL SQLSTATE '45000'
-          SET MESSAGE_TEXT = 'Insufficient stock to place the order';
-      END IF;
-  END$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `PlaceOrder` (IN `p_user_id ` INT, IN `p_order_date` DATETIME, IN `p_total_amount` DECIMAL(10,2), IN `p_shipping_name` VARCHAR(64), IN `p_shipping_address` VARCHAR(255), IN `p_shipping_city` VARCHAR(255), IN `p_shipping_zip` VARCHAR(64), IN `p_shipping_country` VARCHAR(255))   INSERT INTO orders (user_id, order_date, total_amount, shipping_name, shipping_address, shipping_city, shipping_zip, shipping_country)
+    VALUES (p_user_id, p_order_date, p_total_amount, p_shipping_name, p_shipping_address, p_shipping_city, p_shipping_zip, p_shipping_country)$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `RemoveFromCart` (IN `p_cart_id` BIGINT)   BEGIN
     DELETE FROM cart
@@ -214,12 +215,32 @@ DELIMITER ;
 --
 
 CREATE TABLE `cart` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL,
-  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `id` int(11) NOT NULL,
+  `user_id` int(11) UNSIGNED NOT NULL,
+  `product_id` int(11) UNSIGNED NOT NULL,
   `quantity` int(11) NOT NULL DEFAULT '1',
   `added_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(24) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`) VALUES
+(1, 'Gyűrű'),
+(3, 'Karóra'),
+(2, 'Nyaklánc');
 
 -- --------------------------------------------------------
 
@@ -228,29 +249,63 @@ CREATE TABLE `cart` (
 --
 
 CREATE TABLE `orders` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `order_quantity` int(11) NOT NULL,
-  `order_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` varchar(50) DEFAULT NULL
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `order_date` datetime DEFAULT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `total_amount` int(10) DEFAULT NULL,
+  `shipping_name` varchar(64) NOT NULL,
+  `shipping_address` varchar(255) NOT NULL,
+  `shipping_city` varchar(255) NOT NULL,
+  `shipping_zip` varchar(64) NOT NULL,
+  `shipping_country` varchar(255) NOT NULL,
+  `price` int(10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_id`, `product_id`, `order_quantity`, `order_date`, `status`) VALUES
-(1, 7, 1, 2, '2025-01-16 08:47:54', 'Processing'),
-(2, 8, 3, 1, '2025-01-16 08:47:54', 'Shipped'),
-(3, 9, 4, 3, '2025-01-16 08:47:54', 'Delivered'),
-(4, 10, 5, 1, '2025-01-16 08:47:54', 'Processing'),
-(5, 11, 6, 4, '2025-01-16 08:47:54', 'Canceled'),
-(6, 12, 7, 2, '2025-01-16 08:47:54', 'Delivered'),
-(7, 13, 8, 5, '2025-01-16 08:47:54', 'Processing'),
-(8, 14, 9, 1, '2025-01-16 08:47:54', 'Shipped'),
-(9, 15, 10, 2, '2025-01-16 08:47:54', 'Processing'),
-(10, 16, 2, 1, '2025-01-16 08:47:54', 'Delivered');
+INSERT INTO `orders` (`id`, `user_id`, `order_date`, `status`, `total_amount`, `shipping_name`, `shipping_address`, `shipping_city`, `shipping_zip`, `shipping_country`, `price`) VALUES
+(21, 38, '2025-04-19 16:02:38', NULL, 30, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', NULL),
+(22, 38, '2025-04-19 16:03:01', NULL, 29, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', NULL),
+(23, 38, '2025-04-19 16:07:49', NULL, 500, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', NULL),
+(24, 38, '2025-04-19 16:56:32', NULL, 500, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', NULL),
+(25, 38, '2025-04-19 18:01:45', 'pending', NULL, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', 40),
+(26, 38, '2025-04-19 18:38:13', 'pending', NULL, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', NULL),
+(27, 39, '2025-04-19 18:51:57', 'pending', NULL, 'Teszt', 'Teszt', 'teszt', '123', 'Teszt', 40),
+(28, 39, '2025-04-19 18:52:26', 'pending', NULL, 'Teszt', 'Teszt', 'teszt', '123', 'Teszt', NULL),
+(29, 39, '2025-04-19 18:54:51', 'pending', NULL, 'Teszt', 'Teszt', 'teszt', '123', 'Teszt', NULL),
+(30, 39, '2025-04-19 19:06:24', 'pending', NULL, 'Teszt', 'Teszt', 'teszt', '123', 'Teszt', NULL),
+(31, 38, '2025-04-19 20:06:16', 'pending', NULL, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', 500),
+(32, 38, '2025-04-19 20:11:06', 'pending', NULL, 'Székely Ármin', 'Árpád utca 44', 'Dombóvár', '7200', 'Hungary', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `product_id` int(11) UNSIGNED DEFAULT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`) VALUES
+(1, 21, 8, 1, '30.00'),
+(2, 22, 13, 1, '29.00'),
+(3, 23, 9, 1, '500.00'),
+(4, 24, 9, 1, '500.00'),
+(5, 25, 10, 1, '40.00'),
+(6, 27, 10, 1, '40.00'),
+(7, 31, 9, 1, '500.00');
 
 -- --------------------------------------------------------
 
@@ -259,28 +314,27 @@ INSERT INTO `orders` (`id`, `user_id`, `product_id`, `order_quantity`, `order_da
 --
 
 CREATE TABLE `product` (
-  `id` bigint(20) UNSIGNED NOT NULL,
+  `id` int(11) UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
   `quantity` int(11) NOT NULL,
-  `category` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `img_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `category_id` int(11) DEFAULT NULL,
+  `img_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `category`, `img_path`) VALUES
-(13, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8ba2651.jpg'),
-(14, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8e21153.jpg'),
-(15, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8edd17b.jpg'),
-(16, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc8f850f4.jpg'),
-(17, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc916e52e.jpg'),
-(18, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc91e38a2.jpg'),
-(19, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc9287d72.jpg'),
-(20, 'Arany gyűrű', '300.00', 3, 'Gyűrű', '../backend/uploads/6800dc934118f.jpg'),
-(21, 'Gyűrű', '4.00', 3, 'Gyűrű', '../backend/uploads/6800de064f8ff.jpg');
+INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `category_id`, `img_path`, `description`) VALUES
+(8, 'Gyűrű', '30.00', 0, 1, '../backend/uploads/6803c8678dd39.jpg', NULL),
+(9, 'Gyűrű 2', '500.00', 40, 1, '../backend/uploads/6803c876553cf.jpg', NULL),
+(10, 'Gyűrű 3', '40.00', 26, 1, '../backend/uploads/6803c8838e980.jpg', NULL),
+(11, 'Nyaklánc', '399.00', 1, 2, '../backend/uploads/6803c8981baf7.jpg', NULL),
+(12, 'Nyaklánc 2', '59.00', 2, 2, '../backend/uploads/6803c8ad5e0f3.jpg', NULL),
+(13, 'Nyaklánc 3', '29.00', 40, 2, '../backend/uploads/6803c8caa1fb3.jpg', NULL),
+(14, 'Gyűrű321321', '3.00', 16, 1, '../backend/uploads/6803d17fe326f.jpg', NULL);
 
 -- --------------------------------------------------------
 
@@ -289,7 +343,7 @@ INSERT INTO `product` (`id`, `name`, `price`, `quantity`, `category`, `img_path`
 --
 
 CREATE TABLE `users` (
-  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(11) UNSIGNED NOT NULL,
   `username` varchar(100) NOT NULL,
   `role` varchar(50) NOT NULL DEFAULT 'customer',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -297,21 +351,19 @@ CREATE TABLE `users` (
   `phonenumber` varchar(15) DEFAULT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(64) NOT NULL,
-  `Name` varchar(64) DEFAULT NULL,
-  `deleted_at` timestamp(6) NULL DEFAULT NULL
+  `name` varchar(64) DEFAULT NULL,
+  `city` varchar(200) DEFAULT NULL,
+  `zipcode` varchar(16) DEFAULT NULL,
+  `country` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `phonenumber`, `email`, `password`, `Name`, `deleted_at`) VALUES
-(2, 'Gipsz Jakab', 'Customer', '2024-11-25 10:16:53', 'Lehel sor 2', '06202369229', 'gipszjakab1976@gmail.com', '', NULL, NULL),
-(3, 'Hologram Ákos', 'Customer', '2024-11-25 10:17:50', 'Lehel sor 3', '06202369220', 'Hmi@gmail.com', '', NULL, NULL),
-(4, 'Kökényesi MC István', 'customer', '2025-01-09 09:05:45', NULL, NULL, 'kalanyoskornel1976@gmail.com', '$2y$10$mssAPBR5r9cRS2MmhAwu9.8qtGsWJ2xNiaLz3f/CRQ9ctNOp/WXRe', NULL, NULL),
-(31, 'admin', 'admin', '2025-03-03 12:29:16', NULL, NULL, 'admin@gmail.com', '$2y$10$KN9v8nX/C9zcUuh5B.d.9exqMa3q3vTGCl8StHRvCyE2Hu1qv/nia', NULL, NULL),
-(32, '123', 'customer', '2025-04-06 19:02:16', NULL, NULL, '31231231@gmail.com', '$2y$10$nrPjyrFjOqSyAMgf2ICiIOBzY44SLDEyRh.iWZM4bnrv3UO9IEGRC', NULL, NULL),
-(33, '123123121', 'customer', '2025-04-16 08:45:46', NULL, NULL, 'szekelyarmin121@gmail.com', '$2y$10$h6kByJ5V33QYrElhz1BInOO7n/FMX49w8v9YnChi5CuVi97odNEgW', NULL, NULL);
+INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `phonenumber`, `email`, `password`, `name`, `city`, `zipcode`, `country`) VALUES
+(38, 'admin', 'admin', '2025-04-19 15:56:45', 'Árpád utca 44', NULL, 'admin@admin.com', '$2y$10$JfeZU85EiXXfZCB2xojQpezylYp0OKonXRxQE78U9K3sVDV7JkueK', 'Székely Ármin', 'Dombóvár', '7200', 'Hungary'),
+(39, 'teszt', 'customer', '2025-04-19 18:51:06', 'Teszt', NULL, 'teszt@teszt.com', '$2y$10$ABk6mWAtSCrFaFgG8yfOAuAJERLyNrPM6sSNiBpSbVm6tgN0d4p92', 'Teszt', 'teszt', '123', 'Teszt');
 
 --
 -- Indexes for dumped tables
@@ -321,21 +373,39 @@ INSERT INTO `users` (`user_id`, `username`, `role`, `created_at`, `address`, `ph
 -- Indexes for table `cart`
 --
 ALTER TABLE `cart`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_cart_user` (`user_id`),
+  ADD KEY `fk_cart_product` (`product_id`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- Indexes for table `orders`
 --
 ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `id` (`id`);
+  ADD KEY `fk_order_items_order` (`order_id`),
+  ADD KEY `fk_order_item_product` (`product_id`);
 
 --
 -- Indexes for table `product`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `product_id` (`id`);
+  ADD UNIQUE KEY `product_id` (`id`),
+  ADD KEY `fk_product_category` (`category_id`),
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `users`
@@ -343,7 +413,8 @@ ALTER TABLE `product`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `user_id` (`user_id`),
-  ADD UNIQUE KEY `username` (`username`,`phonenumber`,`email`);
+  ADD UNIQUE KEY `username` (`username`,`phonenumber`,`email`),
+  ADD KEY `user_id_2` (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -353,25 +424,61 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT for table `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `user_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `fk_cart_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_cart_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `fk_order_item_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`);
+
+--
+-- Constraints for table `product`
+--
+ALTER TABLE `product`
+  ADD CONSTRAINT `fk_product_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

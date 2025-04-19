@@ -1,3 +1,9 @@
+<?php
+session_start();
+
+include "../backend/registerUser.php"; 
+if (!isset($feedbackMessage)) $feedbackMessage = "";
+?>
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -8,9 +14,7 @@
     <link rel="stylesheet" href="index.css">
 </head> 
 <body style="background-color: #121212; color: #fff;">
-<?php
-session_start();
-?>  
+
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-gold shadow">
 
@@ -49,12 +53,13 @@ session_start();
         </div>
     </div>
 </nav>
+<?php if (!empty($feedbackMessage)) echo $feedbackMessage; ?>
 
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <h1 class="text-center text-gold mb-4">Regisztráció</h1>
-                <form method="POST" action="../backend/registerUser.php" class="p-4 border rounded bg-dark border-gold">
+                <form method="POST"  class="p-4 border rounded bg-dark border-gold">
                 <div class="mb-3">
                         <label for="email" class="form-label text-gold">Email:</label>
                         <input type="email" id="email" name="email" class="form-control bg-black text-white border-gold" required>

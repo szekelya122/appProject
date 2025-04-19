@@ -1,5 +1,5 @@
 <?php
-// user.php
+
 include 'webshop.php';
 
 class User {
@@ -31,39 +31,6 @@ class User {
     }
 }
 
-/***** TESTS *****/
-/*
-class UserTest extends PHPUnit\Framework\TestCase {
-    private $user;
-    private $pdo;
 
-    protected function setUp(): void {
-        $this->pdo = new PDO('mysql:host=localhost;dbname=webshop_test', 'root', 'root');
-        $this->pdo->beginTransaction();
-        $this->user = new User($this->pdo);
-    }
 
-    protected function tearDown(): void {
-        $this->pdo->rollBack();
-    }
-
-    public function testGetAllUsers() {
-        $this->pdo->exec("INSERT INTO users (username, email) VALUES ('testuser', 'test@example.com')");
-        $users = $this->user->getAllUsers();
-        $this->assertIsArray($users);
-        $this->assertNotEmpty($users);
-    }
-
-    public function testGetUserById() {
-        $this->pdo->exec("INSERT INTO users (username, email) VALUES ('testuser', 'test@example.com')");
-        $users = $this->user->getUserById();
-        $this->assertIsArray($users);
-    }
-
-    public function testInsertUser() {
-        $result = $this->user->insertUser('newuser', 'user', '123 St', '123456', 'new@example.com', 'pass123');
-        $this->assertTrue($result);
-    }
-}
-*/
 ?>

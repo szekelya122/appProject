@@ -19,6 +19,7 @@ if ($userId) {
         echo "Hiba a kosár lekérdezésénél: " . $e->getMessage();
     }
 }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
     foreach ($_POST['quantity'] as $productId => $quantity) {
         $quantity = max(1, (int)$quantity); // Minimum 1 legyen
@@ -30,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
     exit;
 }
 
+
 if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     $productId = (int)$_GET['remove'];
     $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ? AND product_id = ?");
@@ -38,5 +40,22 @@ if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     header("Location: cart.php");
     exit;
 }
+if (!empty($_SESSION['shipping']) && isset($_SESSION['user_id'])) {
+    
+    $cartItemsStmt = $pdo->prepare("SELECT product_id, quantity FROM cart WHERE user_id = ?");
+    $cartItemsStmt->execute([$_SESSION['user_id']]);
+    $cartItems = $cartItemsStmt->fetchAll(PDO::FETCH_ASSOC);
 
+   
+    foreach ($cartItems as $item) {
+        $productId = $item['product_id'];
+        $quantityOrdered = $item['quantity'];
+
+        $updateProductStmt = $pdo->prepare("UPDATE product SET quantity = quantity - ? WHERE id = ?");
+        $updateProductStmt->execute([$quantityOrdered, $productId]);
+    }
+
+    
+   
+}
 ?>
