@@ -1,3 +1,19 @@
+<?php
+session_start(); 
+require_once "../backend/modell/webshop.php";
+
+// Initialize cart quantity
+$totalQuantity = 0;
+
+// If user is logged in, fetch cart quantity
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $stmt = $pdo->prepare("SELECT SUM(quantity) AS total_quantity FROM cart WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $totalQuantity = $row['total_quantity'] ?? 0;
+}
+?>
 <!DOCTYPE html>
 <html lang="hu">
 <head>
@@ -59,14 +75,13 @@ session_start();
                 <li class="nav-item"><a class="nav-link" href="../front/index.php">Főoldal</a></li>
                 <li class="nav-item"><a class="nav-link" href="../front/shop.php">Bolt</a></li>
             </ul>
+           
             <div class="d-flex align-items-center">
                 <a href="../front/cart.php" class="d-flex align-items-center me-3 text-decoration-none text-gold">
                     <i class="fas fa-shopping-cart text-white me-1"></i>
                     <span class="text-white">Kosár</span>
-                    <?php if (!empty($_SESSION['cart'])): ?>
-                        <span class="badge bg-danger ms-2">
-                            <?= array_sum(array_column($_SESSION['cart'], 'quantity')) ?>
-                        </span>
+                    <?php if ($totalQuantity > 0): ?>
+                        <span class="badge bg-danger ms-2"><?= $totalQuantity ?></span>
                     <?php endif; ?>
                 </a>
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin'): ?>
@@ -89,7 +104,7 @@ session_start();
     <main>
         <section class="hero text-center py-5 main">
             <div class="container back">
-                <h1 class="display-4">Üdvözlünk a Webshopban</h1>
+                <h1 class="display-4">Üdvözlünk a Webshopunkon</h1>
                 <p class="lead">Fedezze fel az exkluzív termékeket és az időtlen dizájnokat.</p>
                 <a href="../front/shop.php" class="btn btn-primary btn-lg text-white text-decoration-none">Vásárlás most</a>
             </div>

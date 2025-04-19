@@ -1,5 +1,5 @@
 <?php
-
+include "webshop.php";
 session_start();
 
 function addToCart($product_id, $quantity) {

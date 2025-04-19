@@ -10,7 +10,7 @@ try {
     $stmt = $pdo->query("SELECT id, name FROM categories");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    // If there's an error, show a message
+    
     $feedbackMessage = "<div class='alert alert-danger mt-3' role='alert'>Error loading categories: " . htmlspecialchars($e->getMessage()) . "</div>";
 }
 function deleteProduct($pdo, $product_id) {
@@ -19,7 +19,7 @@ function deleteProduct($pdo, $product_id) {
     return $stmt->execute();
 }
 
-// Function to delete a user
+
 function deleteUser($pdo, $user_id) {
     $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = :user_id");
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);

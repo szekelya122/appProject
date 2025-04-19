@@ -175,7 +175,7 @@ form button:hover {
     color: #000;
 }
 
-/* Media Queries */
+
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
@@ -208,17 +208,17 @@ form button:hover {
     }
 }
 
-/* Card Hover Effect */
+
 .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.5); /* Arany színű árnyék */
+    box-shadow: 0 10px 20px rgba(255, 215, 0, 0.5); 
 }
 
-/* Gold text and button */
+
 .text-gold {
     color: #b8860b;
 }

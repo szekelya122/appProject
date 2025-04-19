@@ -63,7 +63,7 @@ include "../backend/manage_admin.php";
     <h1 class="text-center mb-4">Admin Panel</h1>
 
     <div class="row">
-        <!-- Upload New Product -->
+        
         <div class="col-md-4">
             <h2>Upload New Product</h2>
             <form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
@@ -103,7 +103,7 @@ include "../backend/manage_admin.php";
             </form>
             </div>
 
-        <!-- Manage Products -->
+        
         <div class="col-md-4">
             <h2>Manage Products</h2>
             <ul class='list-group mt-3'>
@@ -128,7 +128,7 @@ include "../backend/manage_admin.php";
             </ul>
         </div>
 
-        <!-- Manage Users -->
+       
         <div class="col-md-4">
             <h2>Manage Users</h2>
             <ul class='list-group mt-3'>

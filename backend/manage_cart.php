@@ -1,41 +1,42 @@
 <?php
-session_start(); 
-include "../backend/modell/webshop.php";
+include_once "../backend/modell/webshop.php"; 
 
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
+
+$userId = $_SESSION['user_id'] ?? null;
+$cartDetails = [];
+
+if ($userId) {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT c.product_id, c.quantity, p.name, p.price
+            FROM cart c
+            JOIN product p ON c.product_id = p.id
+            WHERE c.user_id = ?
+        ");
+        $stmt->execute([$userId]);
+        $cartDetails = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Hiba a kosár lekérdezésénél: " . $e->getMessage();
+    }
 }
-
-// Handle updating the cart
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
-    foreach ($_POST['quantity'] as $product_id => $quantity) {
-        $quantity = (int)$quantity; // Ensure it's an integer
-        if (isset($_SESSION['cart'][$product_id])) {
-            if ($quantity > 0) {
-                $_SESSION['cart'][$product_id]['quantity'] = $quantity; 
-            } else {
-                unset($_SESSION['cart'][$product_id]); 
-            }
-        }
+    foreach ($_POST['quantity'] as $productId => $quantity) {
+        $quantity = max(1, (int)$quantity); // Minimum 1 legyen
+        $stmt = $pdo->prepare("UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?");
+        $stmt->execute([$quantity, $userId, $productId]);
     }
-    header("Location: ../front/cart.php"); // Refresh the page to reflect changes
-    exit();
+
+    header("Location: ../front/cart.php");
+    exit;
 }
 
-// Handle removing items from the cart
-if (isset($_GET['remove'])) {
-    $product_id = filter_input(INPUT_GET, 'remove', FILTER_SANITIZE_NUMBER_INT);
-    if (isset($_SESSION['cart'][$product_id])) {
-        unset($_SESSION['cart'][$product_id]); 
-    }
-    header("Location: ../front/cart.php"); 
-    exit();
+if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
+    $productId = (int)$_GET['remove'];
+    $stmt = $pdo->prepare("DELETE FROM cart WHERE user_id = ? AND product_id = ?");
+    $stmt->execute([$userId, $productId]);
+
+    header("Location: cart.php");
+    exit;
 }
 
-// Calculate total
-$total = 0;
-foreach ($_SESSION['cart'] as $item) {
-    $total += $item['price'] * $item['quantity'];
-}
 ?>
-
