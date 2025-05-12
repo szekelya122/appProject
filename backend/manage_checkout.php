@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         foreach ($cartItems as $item) {
-            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, ordered_price)
+            $stmt = $pdo->prepare("INSERT INTO order_items (order_id, product_id, quantity, price)
                                    VALUES (?, ?, ?, ?)");
             $result = $stmt->execute([
                 $orderId,
